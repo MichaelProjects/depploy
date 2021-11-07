@@ -7,4 +7,3 @@ edition = "2018"
 
 [dependencies]
 structopt = "0.3.25"
-toml = "0.5"
