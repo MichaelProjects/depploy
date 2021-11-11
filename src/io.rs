@@ -14,19 +14,17 @@ pub fn load_project_file() -> std::io::Result<String> {
 
 pub fn get_info(config_data: String) -> Config{
     let mut content = Config::new("", "");
-    for line in config_data.lines(){
-        match line{
-            "version" => content.version = parse_line(line),
-            "" => content.name = parse_line(line),
-            _ => println!("Nothing to parse")
+    for line in config_data.lines() {
+        if line.contains("version") { content.version = parse_line(line); }
+        else if line.contains("name") { content.name = parse_line(line); }
 
-        }
     }
     content
 }
 
 pub fn parse_line(line: &str) -> String{
     let vec = line.split("=").collect::<Vec<&str>>();
-    println!("{}", &vec[2]);
-    return vec[2].to_string()
+    println!("{}", &vec[1]);
+    return vec[1].to_string()
 }
+
