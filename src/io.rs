@@ -15,9 +15,8 @@ pub fn load_project_file() -> std::io::Result<String> {
 pub fn get_info(config_data: String) -> Config{
     let mut content = Config::new("", "");
     for line in config_data.lines() {
-        if line.contains("version") { content.version = parse_line(line); }
-        else if line.contains("name") { content.name = parse_line(line); }
-
+        if line.contains("version") { content.version = parse_line(line); break;}
+        else if line.contains("name") { content.name = parse_line(line);}
     }
     content
 }
@@ -25,6 +24,6 @@ pub fn get_info(config_data: String) -> Config{
 pub fn parse_line(line: &str) -> String{
     let vec = line.split("=").collect::<Vec<&str>>();
     println!("{}", &vec[1]);
-    return vec[1].to_string()
+    return vec[1].replace("\"", "").to_string();
 }
 

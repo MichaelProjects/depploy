@@ -2,8 +2,6 @@ mod cli;
 mod io;
 mod build;
 
-use std::fmt;
-
 use structopt::StructOpt;
 use crate::build::{build_image, create_tag, push_image};
 use crate::io::{get_info, load_project_file, parse_line};
