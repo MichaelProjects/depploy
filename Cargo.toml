@@ -2,8 +2,10 @@
 name = "depploy"
 version = "0.1.0"
 edition = "2018"
+description = "Depploy is a cli tool that makes it easy to create docker images, for every programming language."
 author = "Michael Lichtenecker"
 homepage = "https://github.com/MichaelProjects/depploy"
+license-file = "./LICENSE"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
