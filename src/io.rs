@@ -1,6 +1,4 @@
-use std::convert::TryFrom;
 use std::fs;
-use std::io::{Error, ErrorKind};
 
 pub struct Config {
     pub version: String,
