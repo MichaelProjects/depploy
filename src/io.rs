@@ -1,3 +1,7 @@
+use std::{fs};
+use std::convert::TryFrom;
+use std::io::{Error, ErrorKind};
+
 pub struct Config{
     pub version: String,
     pub name: String
@@ -8,8 +12,30 @@ impl Config{
     }
 }
 
+
+pub fn match_config() -> String {
+    let config_names = vec!["Cargo.toml", "conf.toml"];
+    let mut found = String::new();
+    let current_dir = std::env::current_dir().unwrap();
+    for entry in fs::read_dir(current_dir).unwrap(){
+        let entry = entry.unwrap();
+        let path = entry.path();
+        let str_path = path.to_str().unwrap();
+        for config_name in config_names.iter(){
+            if str_path.contains(config_name){
+                found = str_path.to_string();
+                return found;
+            }
+        }
+    }
+    panic!("Could not find config")
+}
+
+
 pub fn load_project_file() -> std::io::Result<String> {
-    std::fs::read_to_string("./Cargo.toml")
+    let filename = match_config();
+    let content = fs::read_to_string(filename);
+    content
 }
 
 pub fn get_info(config_data: String) -> Config{
@@ -23,7 +49,7 @@ pub fn get_info(config_data: String) -> Config{
 
 pub fn parse_line(line: &str) -> String{
     let vec = line.split("=").collect::<Vec<&str>>();
-    println!("{}", &vec[1]);
     return vec[1].replace("\"", "").to_string();
 }
+
 

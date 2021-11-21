@@ -14,8 +14,10 @@ pub fn build_image(image_tag: &String){
     let output = Command::new("docker")
         .args(["build", "-t", image_tag, "."])
         .output()
-        .expect("Could not build image");
-    println!("{:?}", output);
+        .unwrap();
+    if output.stdout.is_empty(){
+        panic!("Could not find a dockerfile")
+    }
 }
 
 pub fn push_image(image_tag: &String){
