@@ -8,3 +8,5 @@ edition = "2018"
 [dependencies]
 structopt = "0.3.25"
 shiplift = "0.7"
+toml = "0.5.8"
+serde = "1.0"
