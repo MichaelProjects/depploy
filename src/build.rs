@@ -1,7 +1,5 @@
 use crate::io::Config;
-use std::io::prelude::*;
-use std::os::unix::net::UnixStream;
-use std::process::{Command, Output};
+use std::process::{Command};
 
 pub fn create_tag(image_conf: &Config, mut docker_registry: String) -> String {
     if docker_registry.clone().ne(&String::from("")){
@@ -10,8 +8,8 @@ pub fn create_tag(image_conf: &Config, mut docker_registry: String) -> String {
 
     let tag = format!(
         "{}{}:{}",
-        docker_registry.trim(),
-        image_conf.name.trim(),
+        docker_registry.trim().to_lowercase(),
+        image_conf.name.trim().to_lowercase(),
         image_conf.version.trim()
     );
     println!("Docker image-tag: {}", tag);
