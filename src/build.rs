@@ -16,9 +16,9 @@ pub fn create_tag(image_conf: &Config, mut docker_registry: String) -> String {
     return tag;
 }
 
-pub fn build_image(image_tag: &String) {
+pub fn build_image(image_tag: &String, dir: &String) {
     let output = Command::new("docker")
-        .args(["build", "-t", image_tag, "."])
+        .args(["build", "-t", image_tag, dir])
         .output()
         .unwrap();
     if output.stdout.is_empty() {
