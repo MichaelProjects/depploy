@@ -1,6 +1,6 @@
 [package]
 name = "depploy"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 description = "Depploy is a cli tool that makes it easy to create docker images, for every programming language."
 author = "Michael Lichtenecker"
