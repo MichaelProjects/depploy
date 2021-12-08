@@ -1,7 +1,7 @@
 use crate::load_project_file;
 use serde::Deserialize;
 use std::path::Path;
-use toml::from_str;
+use toml;
 
 #[derive(Deserialize)]
 pub struct DepployConfig {

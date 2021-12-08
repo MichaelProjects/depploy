@@ -2,12 +2,12 @@ mod build;
 mod cli;
 mod conf;
 mod io;
+mod commands;
 
-use std::path::PathBuf;
-
+use commands::Command;
 use crate::build::{build_image, create_tag, push_image};
 use crate::conf::read_depploy_conf;
-use crate::io::{get_info, load_project_file, match_config, parse_line};
+use crate::io::{get_info, load_project_file, match_config};
 use structopt::StructOpt;
 
 #[derive(StructOpt)]
@@ -21,17 +21,7 @@ pub struct Depploy {
     pub cmd: Command,
 }
 
-#[derive(StructOpt, PartialEq, Debug)]
-#[structopt(about = "Run depploy")]
-pub enum Command {
-    #[structopt(about = "Build and pushes the docker image")]
-    Run{
-        #[structopt(parse(from_os_str), default_value = ".")]
-        dir: PathBuf,
-        #[structopt(short = "d")]
-        debug: bool,
-    },
-}
+
 
 
 fn main() {
