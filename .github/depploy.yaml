@@ -1,0 +1,51 @@
+name: depploy_pipeline
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master, dev]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          override: true
+
+      - name: build depploy
+      - run: cargo build --release
+
+    testing:
+      needs: build
+      runs-on: ubuntu-20.04
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions-rs/toolchain@v1
+
+        - name: run tests
+        - run: cargo test --release
+
+        - name: run clippy
+        - run: cargo clippy --release
+
+    depploy:
+      needs: build && testing
+      if: github.ref == 'refs/heads/master'
+      runs-on: ubuntu-20.04
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions-rs/toolchain@v1
+          with:
+              toolchain: stable
+              override: true
+        - uses: katyo/publish-crates@v1
+          with:
+              registry-token: ${{ secrets.CARGO_SECRET }}
+
+
