@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf};
+use std::{fs, path::{Path, PathBuf}};
 
 pub struct Config {
     pub version: String,
@@ -36,6 +36,7 @@ pub fn match_config(dir: &PathBuf) -> String {
 }
 
 pub fn load_project_file(path: &PathBuf, filename: &String) -> std::io::Result<String> {
+    //! take sthe path and the filename and reads the given file as string and returns it.
     let filename = format!("{}/{}", path.to_str().expect("lul"), filename);
     fs::read_to_string(filename)
 }
@@ -59,8 +60,8 @@ pub fn parse_line(line: &str) -> String {
     return vec[1].replace("\"", "").to_string();
 }
 
-pub fn build_dir(dir: &PathBuf) -> String {
-    let mut dir_str = dir.to_str().expect("Path");
+pub fn build_dir(dir: &Path) -> String {
+    let dir_str = dir.to_str().expect("Path");
     if dir_str.ne(".") {
         let a = format!("{}/.",dir_str );
         return a

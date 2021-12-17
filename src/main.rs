@@ -33,6 +33,7 @@ fn main() {
 
     match &cli.cmd {
         Command::Run { dir, debug } => {
+            let _a = debug; //todo remove this line, this is only for clippy
             
             let build_dir = build_dir(dir);
             let depploy = match read_depploy_conf(&depploy_dir){
@@ -41,7 +42,7 @@ fn main() {
             };
 
             let filename = match_config(dir);
-            let config_data = match load_project_file(&dir, &filename){
+            let config_data = match load_project_file(dir, &filename){
                 Ok(data) => data,
                 Err(err) => panic!("Error: {}", err),
             };
