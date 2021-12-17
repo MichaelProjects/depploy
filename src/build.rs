@@ -21,7 +21,7 @@ pub fn build_image(image_tag: &String, dir: &str) {
     let output = Command::new("docker")
         .args(["build", "-t", image_tag, dir])
         .output()
-        .unwrap();
+        .expect("Could not build Image");
 }
 
 pub fn push_image(image_tag: &String) {
@@ -29,5 +29,5 @@ pub fn push_image(image_tag: &String) {
     let output = Command::new("docker")
         .args(["push", image_tag])
         .output()
-        .expect("Could not build image");
+        .expect("Could not push Image");
 }
