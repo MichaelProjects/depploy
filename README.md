@@ -1,5 +1,6 @@
 # Depploy
 
+![example workflow](https://github.com/MichaelProjects/depploy/actions/workflows/depploy.yml/badge.svg?branch=master)
 ## About
 Depploy is a cli tool that makes it easy to create docker images, for every programming language.
 Simply specify the name and the version in your application config, and depploy will take care of build and pushing to the docker hub or your private registry.
