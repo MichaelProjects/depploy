@@ -2,15 +2,14 @@ name: depploy_pipeline
 
 on:
   push:
-    branches: [master, dev]
+    branches: [ master, dev ]
   pull_request:
-    branches: [master, dev]
+    branches: [ master, dev ]
 
 
 jobs:
   build:
     runs-on: ubuntu-20.04
-
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -20,7 +19,7 @@ jobs:
           override: true
 
       - name: build depploy
-      - run: cargo build --release
+        run: cargo build --release
 
   testing:
     needs: build
@@ -34,10 +33,10 @@ jobs:
           override: true
 
       - name: run tests
-      - run: cargo test --release
+        run: cargo test --release
 
       - name: run clippy
-      - run: cargo clippy --release
+        run: cargo clippy --release
 
   depploy:
     needs: testing
