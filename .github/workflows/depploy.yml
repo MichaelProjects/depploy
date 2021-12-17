@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -27,6 +28,10 @@ jobs:
       steps:
         - uses: actions/checkout@v2
         - uses: actions-rs/toolchain@v1
+          with:
+            toolchain: nightly
+            components: clippy
+            override: true
 
         - name: run tests
         - run: cargo test --release
