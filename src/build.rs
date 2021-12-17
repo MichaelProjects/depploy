@@ -16,20 +16,18 @@ pub fn create_tag(image_conf: &Config, mut docker_registry: String) -> String {
     return tag;
 }
 
-pub fn build_image(image_tag: &String, dir: &String) {
+pub fn build_image(image_tag: &String, dir: &str) {
+    println!("Building image: {}", image_tag);
     let output = Command::new("docker")
         .args(["build", "-t", image_tag, dir])
         .output()
         .unwrap();
-    if output.stdout.is_empty() {
-        panic!("Could not find a dockerfile")
-    }
 }
 
 pub fn push_image(image_tag: &String) {
+    println!("Pushing image: {}", image_tag);
     let output = Command::new("docker")
         .args(["push", image_tag])
         .output()
         .expect("Could not build image");
-    println!("{:?}", output);
 }
