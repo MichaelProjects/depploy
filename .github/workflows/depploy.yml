@@ -18,6 +18,8 @@ jobs:
           components: clippy
           override: true
       - uses: Swatinem/rust-cache@v1
+        with: 
+          sharedKey: key
       - name: build depploy
         run: cargo build --release
 
@@ -32,6 +34,8 @@ jobs:
           components: clippy
           override: true
       - uses: Swatinem/rust-cache@v1
+        with: 
+            sharedKey: key
       - name: run tests
         run: cargo test --release
 
@@ -49,6 +53,8 @@ jobs:
           toolchain: stable
           override: true
       - uses: Swatinem/rust-cache@v1
+        with: 
+            sharedKey: key
       - uses: katyo/publish-crates@v1
         with:
             registry-token: ${{ secrets.CARGO_SECRET }}
