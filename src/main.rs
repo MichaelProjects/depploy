@@ -32,9 +32,7 @@ fn main() {
     let cli = Depploy::from_args();
 
     match &cli.cmd {
-        Command::Run { dir, debug } => {
-            let _a = debug; //todo remove this line, this is only for clippy
-            
+        Command::Run { dir, debug } => {            
             let build_dir = build_dir(dir);
             let depploy = match read_depploy_conf(&depploy_dir){
                 Ok(depploy) => depploy,
@@ -46,10 +44,9 @@ fn main() {
                 Ok(data) => data,
                 Err(err) => panic!("Error: {}", err),
             };
-
-
             let data = get_info(config_data);
             let tag = create_tag(&data, depploy.docker_registry);
+            
             build_image(&tag, build_dir.as_str());
             push_image(&tag);
         }

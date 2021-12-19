@@ -30,3 +30,11 @@ mkdir /etc/depploy
 nano /etc/depploy/settings.toml
 ```
 the content should be look like the "example_settings.toml".
+
+## Todo
+these are the features that should be added in the near future.
+
+- Improved status and exit messages
+- Better docker deamon handling
+- Logging
+- Dockerfile generator
