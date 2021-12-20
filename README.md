@@ -14,9 +14,16 @@ Depploy is pretty simple, type:
 ```bash
 depploy run
 ```
-and depploy searches in the current directory for a:
-- conf.toml
-- Cargo.toml
+and depploy searches in the current directory for a (any file extionsion like yml, toml, yaml, ini):
+- conf
+- config
+- Cargo
+
+the config needs to contain following keys:
+
+- name
+- version
+
 
 more configuration file are coming.
 
