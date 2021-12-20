@@ -21,7 +21,22 @@ pub fn match_config(dir: &PathBuf) -> String {
     //! ```
     //! match_config(&PathBuf::from("/home/user/project/"));
     //! ```
-    let config_names = vec!["Cargo.toml", "conf.toml"];
+    let config_names = vec!["Cargo"];
+    let result = find_conf(dir, config_names);
+    if result.eq(""){
+        let configs = vec!["conf", "config"];
+        let result = find_conf(dir, configs);
+        if result.eq(""){
+            panic!("Could not find config file");
+        }
+        return result;
+    }
+    return result;
+    
+}
+
+fn find_conf(dir: &PathBuf, config_names: Vec<&str>) -> String{
+    //! searches in the given dir for the specified config files, if the files are found, then it will return the name of the config file.
     for entry in fs::read_dir(dir).unwrap() {
         let entry = entry.unwrap();
         let path = entry.path();
@@ -32,11 +47,11 @@ pub fn match_config(dir: &PathBuf) -> String {
             }
         }
     }
-    panic!("Could not find config")
+    return String::new();
 }
 
 pub fn load_project_file(path: &PathBuf, filename: &String) -> std::io::Result<String> {
-    //! take sthe path and the filename and reads the given file as string and returns it.
+    //! takes the path and the filename and reads the given file as string and returns it.
     let filename = format!("{}/{}", path.to_str().expect("lul"), filename);
     fs::read_to_string(filename)
 }
@@ -68,3 +83,6 @@ pub fn build_dir(dir: &Path) -> String {
     }
     ".".to_string()
 }
+
+#[test]
+fn test_find_config(){}
