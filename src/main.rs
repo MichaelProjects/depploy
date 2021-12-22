@@ -24,9 +24,6 @@ pub struct Depploy {
     pub cmd: Command,
 }
 
-
-
-
 fn main() {
     let depploy_dir =  PathBuf::from_str("/etc/depploy").unwrap();
     let cli = Depploy::from_args();
@@ -50,6 +47,7 @@ fn main() {
             build_image(&tag, build_dir.as_str());
             push_image(&tag);
         }
+        Command::Search { host, debug } => todo!(),
     }
 
 }

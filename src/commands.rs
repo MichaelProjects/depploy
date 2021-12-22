@@ -9,7 +9,14 @@ pub enum Command {
     Run{
         #[structopt(parse(from_os_str), default_value = ".")]
         dir: PathBuf,
-        #[structopt(short = "d")]
+        #[structopt(short = "v")]
         debug: bool,
     },
+    #[structopt(about = "Search for docker images in registry")]
+    Search{
+        host: String,
+        #[structopt(short = "v")]
+        debug: bool
+
+    }
 }

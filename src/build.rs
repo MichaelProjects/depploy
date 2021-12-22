@@ -22,6 +22,11 @@ pub fn build_image(image_tag: &String, dir: &str) {
         .args(["build", "-t", image_tag, dir])
         .output()
         .expect("Could not build Image");
+    if output.stderr.len() > 0 {
+        println!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
+    }
+    let output_str = String::from_utf8(output.stdout).expect("Could not decode process output");
+    println!("Building Output: {:?}", output_str);
 }
 
 pub fn push_image(image_tag: &String) {
@@ -30,4 +35,9 @@ pub fn push_image(image_tag: &String) {
         .args(["push", image_tag])
         .output()
         .expect("Could not push Image");
+    if output.stderr.len() > 0 {
+        println!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
+    }
+    let output_str = String::from_utf8(output.stdout).expect("Could not decode process output");
+    println!("Pushing Output: {:?}", output_str);
 }
