@@ -21,7 +21,7 @@ pub fn match_config(dir: &PathBuf) -> String {
     //! ```
     //! match_config(&PathBuf::from("/home/user/project/"));
     //! ```
-    let config_names = vec!["Cargo"];
+    let config_names = vec!["Cargo.toml"];
     let result = find_conf(dir, config_names);
     if result.eq(""){
         let configs = vec!["conf", "config"];

@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 use commands::Command;
-use crate::build::{build_image, create_tag, push_image};
+use crate::build::{build_image, create_tag, push_image, set_latest_tag};
 use crate::conf::read_depploy_conf;
 use crate::io::{build_dir, get_info, load_project_file, match_config};
 use structopt::StructOpt;
@@ -42,10 +42,13 @@ fn main() {
                 Err(err) => panic!("Error: {}", err),
             };
             let data = get_info(config_data);
-            let tag = create_tag(&data, depploy.docker_registry);
+            let tag = create_tag(&data, depploy.docker_registry); 
             
             build_image(&tag, build_dir.as_str());
+            
             push_image(&tag);
+            let latest_tag = set_latest_tag(&tag);
+            push_image(&latest_tag);
         }
         Command::Search { host, debug } => todo!(),
     }

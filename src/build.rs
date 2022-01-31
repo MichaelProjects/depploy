@@ -16,6 +16,23 @@ pub fn create_tag(image_conf: &Config, mut docker_registry: String) -> String {
     return tag;
 }
 
+pub fn set_latest_tag(image_tag: &String) -> String{
+    let latest_tag: String = format!("{}:{}", image_tag, "latest");
+    let output = Command::new("docker")
+        .arg("tag")
+        .arg(image_tag)
+        .arg(&latest_tag)
+        .output()
+        .expect("Could not set latest tag");
+    if output.stderr.len() > 0 {
+        println!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
+    }
+    let output_str = String::from_utf8(output.stdout).expect("Could not decode process output");
+    println!("Building Output: {:?}", output_str);
+    return latest_tag;
+}
+
+
 pub fn build_image(image_tag: &String, dir: &str) {
     println!("Building image: {}", image_tag);
     let output = Command::new("docker")
