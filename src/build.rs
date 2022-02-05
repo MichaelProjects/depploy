@@ -1,23 +1,31 @@
 use crate::io::Config;
 use std::process::{Command};
 
-pub fn create_tag(image_conf: &Config, mut docker_registry: String) -> String {
+pub fn create_tag(image_conf: &Config, mut docker_registry: String) -> Vec<String> {
     if docker_registry.clone().ne(&String::from("")){
         docker_registry = format!("{}/", docker_registry)
     }
 
-    let tag = format!(
-        "{}{}:{}",
+    let name = format!(
+        "{}{}",
         docker_registry.trim().to_lowercase(),
         image_conf.name.trim().to_lowercase(),
+    );
+
+    let tag = format!(
+        "{}:{}",
+        name,
         image_conf.version.trim()
     );
     println!("Docker image-tag: {}", tag);
-    return tag;
+    return vec![name, tag];
 }
 
-pub fn set_latest_tag(image_tag: &String) -> String{
-    let latest_tag: String = format!("{}:{}", image_tag, "latest");
+pub fn set_latest_tag(image_name: &String, image_tag: &String) -> String {
+
+    let latest_tag: String = format!("{}:{}", image_name, "latest");
+    
+    // uses the docker deamon to set the latest tag
     let output = Command::new("docker")
         .arg("tag")
         .arg(image_tag)

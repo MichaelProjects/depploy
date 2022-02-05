@@ -43,11 +43,15 @@ fn main() {
             };
             let data = get_info(config_data);
             let tag = create_tag(&data, depploy.docker_registry); 
-            
+            let name = tag.first().expect("Image name not found");
+            let tag = tag.last().expect("Image tag not found");
+
             build_image(&tag, build_dir.as_str());
             
             push_image(&tag);
-            let latest_tag = set_latest_tag(&tag);
+
+            // sets label to latest build and then pushes it also to the registry
+            let latest_tag = set_latest_tag(name, &tag);
             push_image(&latest_tag);
         }
         //Command::Search { host, debug } => todo!(),
