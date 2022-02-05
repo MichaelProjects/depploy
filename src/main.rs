@@ -50,7 +50,7 @@ fn main() {
             let latest_tag = set_latest_tag(&tag);
             push_image(&latest_tag);
         }
-        Command::Search { host, debug } => todo!(),
+        //Command::Search { host, debug } => todo!(),
     }
 
 }

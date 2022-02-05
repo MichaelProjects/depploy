@@ -12,11 +12,11 @@ pub enum Command {
         #[structopt(short = "v")]
         debug: bool,
     },
-    #[structopt(about = "Search for docker images in registry")]
+    /*#[structopt(about = "Search for docker images in registry")]
     Search{
         host: String,
         #[structopt(short = "v")]
         debug: bool
 
-    }
+    }*/
 }
