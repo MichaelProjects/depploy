@@ -32,8 +32,9 @@ pub fn set_latest_tag(image_name: &String, image_tag: &String) -> String {
         .arg(&latest_tag)
         .output()
         .expect("Could not set latest tag");
-    if output.stderr.len() > 0 {
-        println!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
+    if output.stderr.len() >0 {
+        panic!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
+
     }
     let output_str = String::from_utf8(output.stdout).expect("Could not decode process output");
     println!("Building Output: {:?}", output_str);
@@ -41,14 +42,14 @@ pub fn set_latest_tag(image_name: &String, image_tag: &String) -> String {
 }
 
 
-pub fn build_image(image_tag: &String, dir: &str) {
+pub fn build_image(image_tag: &String, dir: &str, dockerfile_name: &String) {
     println!("Building image: {}", image_tag);
     let output = Command::new("docker")
-        .args(["build", "-t", image_tag, dir])
+        .args(["build", "-f", dockerfile_name, "-t", image_tag, dir])
         .output()
         .expect("Could not build Image");
-    if output.stderr.len() > 0 {
-        println!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
+    if output.stderr.len() != 0 {
+        panic!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
     }
     let output_str = String::from_utf8(output.stdout).expect("Could not decode process output");
     println!("Building Output: {:?}", output_str);
@@ -61,7 +62,7 @@ pub fn push_image(image_tag: &String) {
         .output()
         .expect("Could not push Image");
     if output.stderr.len() > 0 {
-        println!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
+        panic!("{}", String::from_utf8(output.stderr).expect("Could not decode process output"));
     }
     let output_str = String::from_utf8(output.stdout).expect("Could not decode process output");
     println!("Pushing Output: {:?}", output_str);
