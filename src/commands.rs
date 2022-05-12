@@ -9,8 +9,12 @@ pub enum Command {
     Run{
         #[structopt(parse(from_os_str), default_value = ".")]
         dir: PathBuf,
-        #[structopt(short = "v")]
-        debug: bool,
+        #[structopt(short = "f", long = "file", default_value = "dockerfile", help = "Which should be used to get the instrcutions from")]
+        dockerfile_name: String,
+        #[structopt(short = "nl", long = "no-latest", help="Should not build and push the latest tag to the registry")]
+        no_latest: bool,
+        #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
+        debug: bool
     },
     #[structopt(about = "Search for docker images in registry")]
     Search{
@@ -18,5 +22,12 @@ pub enum Command {
         #[structopt(short = "v")]
         debug: bool
 
+    },
+    #[structopt(about = "Generate a dockerfile with minimal instrcutions, detects language")]
+    Generate{
+        #[structopt(parse(from_os_str), default_value = ".")]
+        dir: PathBuf,
+        #[structopt(short = "l", long = "language", default_value = "", help = "Specify the language the project uses")]
+        language: String
     }
 }
