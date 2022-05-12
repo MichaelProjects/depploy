@@ -11,10 +11,10 @@ pub enum Command {
         dir: PathBuf,
         #[structopt(short = "f", long = "file", default_value = "dockerfile", help = "Which should be used to get the instrcutions from")]
         dockerfile_name: String,
-        #[structopt(short = "v")]
-        debug: bool,
         #[structopt(short = "nl", long = "no-latest", help="Should not build and push the latest tag to the registry")]
-        no_latest: bool
+        no_latest: bool,
+        #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
+        debug: bool
     },
     #[structopt(about = "Search for docker images in registry")]
     Search{

@@ -1,7 +1,7 @@
 mod build;
-mod cli;
 mod commands;
 mod conf;
+mod generate;
 mod io;
 
 use std::path::{Path, PathBuf};
