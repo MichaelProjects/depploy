@@ -3,15 +3,18 @@ mod cli;
 mod conf;
 mod io;
 mod commands;
+mod search;
 
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use tokio;
 
 use commands::Command;
 use crate::build::{build_image, create_tag, push_image};
 use crate::conf::read_depploy_conf;
 use crate::io::{build_dir, get_info, load_project_file, match_config};
 use structopt::StructOpt;
+
 
 #[derive(StructOpt)]
 #[structopt(
@@ -24,7 +27,8 @@ pub struct Depploy {
     pub cmd: Command,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let depploy_dir =  PathBuf::from_str("/etc/depploy").unwrap();
     let cli = Depploy::from_args();
 
