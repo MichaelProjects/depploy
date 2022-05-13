@@ -1,0 +1,13 @@
+FROM python:3.9.5-buster
+
+# copy first the requirements
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt 
+
+# copy the config file
+COPY conf.toml .
+
+# copy whole project into /app
+COPY . /app
+
+CMD ["python3", "/app/main.py"]
