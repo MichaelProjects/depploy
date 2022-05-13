@@ -30,6 +30,8 @@ pub enum Command {
         #[structopt(parse(from_os_str), default_value = ".")]
         dir: PathBuf,
         #[structopt(short = "l", long = "language", default_value = "", help = "Specify the language the project uses")]
-        language: String
+        language: String,
+        #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
+        debug: bool
     }
 }

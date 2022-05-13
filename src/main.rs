@@ -5,21 +5,21 @@ mod generate;
 mod io;
 mod models;
 
+use generate::lang::{create_project_analysis, get_project_language};
+use log::{error, info, trace, warn, LevelFilter};
+use simple_logger::SimpleLogger;
 use std::fs::{self, Permissions};
 use std::os::unix::prelude::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use generate::lang::get_project_language;
 use tokio;
-use log::{info, trace, warn, LevelFilter};
-use simple_logger::SimpleLogger;
 
 use crate::build::{build_image, create_tag, push_image, set_latest_tag};
 use crate::conf::read_depploy_conf;
 use crate::io::{build_dir, get_info, load_project_file, match_config};
 use commands::Command;
 use structopt::StructOpt;
-
+use text_io::scan;
 
 #[derive(StructOpt)]
 #[structopt(
@@ -34,18 +34,20 @@ pub struct Depploy {
 
 #[tokio::main]
 async fn main() {
-    let depploy_dir =  PathBuf::from_str("/etc/depploy").unwrap();
-    
+    let depploy_dir = PathBuf::from_str("/etc/depploy").unwrap();
+
     // checks if the depploy directory exists
-    if !depploy_dir.exists(){
-        if fs::create_dir(&depploy_dir).is_err(){
-         panic!("Missing permisson to create depploy directory /etc/depploy, run again with sudo or create it yourself.")
+    if !depploy_dir.exists() {
+        if fs::create_dir(&depploy_dir).is_err() {
+            panic!("Missing permisson to create depploy directory /etc/depploy, run again with sudo or create it yourself.")
         }
-        if fs::set_permissions(&depploy_dir, Permissions::from_mode(0o777)).is_err(){
+        if fs::set_permissions(&depploy_dir, Permissions::from_mode(0o777)).is_err() {
             panic!("Couldn't set permissions")
         }
+        get_project_language(&depploy_dir).await;
     }
     let cli = Depploy::from_args();
+    let logger = SimpleLogger::new();
 
     match &cli.cmd {
         Command::Run {
@@ -55,20 +57,23 @@ async fn main() {
             dockerfile_name,
             no_latest,
         } => {
-            let logger = SimpleLogger::new();
             if debug == &true {
-                SimpleLogger::with_level(logger, LevelFilter::Debug).init().unwrap()
-            }else{
-                SimpleLogger::with_level(logger, LevelFilter::Info).init().unwrap()
+                SimpleLogger::with_level(logger, LevelFilter::Debug)
+                    .init()
+                    .unwrap()
+            } else {
+                SimpleLogger::with_level(logger, LevelFilter::Info)
+                    .init()
+                    .unwrap()
             }
-            
+
             // Gets the depploy config data
             let build_dir = build_dir(dir);
             let depploy = read_depploy_conf(&depploy_dir);
             let mut registry = String::new();
             if depploy.is_err() || public_repo == &true {
                 warn!("No depploy config found, will push to hub.docker.com")
-            }else{
+            } else {
                 registry = depploy.unwrap().docker_registry;
             }
 
@@ -95,12 +100,33 @@ async fn main() {
                 let latest_tag = set_latest_tag(name, &tag);
                 push_image(&latest_tag);
             }
-        } 
+        }
         /*Command::Search { host, debug } => {
             println!("needs to be implemented");
         },*/
-        Command::Generate { dir, language } => {
-            let languages = get_project_language(depploy_dir).await;
+        Command::Generate { dir, language , debug} => {
+            if debug == &true {
+                SimpleLogger::with_level(logger, LevelFilter::Debug)
+                    .init()
+                    .unwrap()
+            } else {
+                SimpleLogger::with_level(logger, LevelFilter::Info)
+                    .init()
+                    .unwrap()
+            }
+            let mut path = dir.into();
+            if dir.eq(&PathBuf::from_str(".").unwrap()) {
+                path = std::env::current_dir().unwrap()
+            }
+            let detected = match create_project_analysis(&path) {
+                Ok(lang) => lang,
+                Err(err) => {
+                    warn!("Was not able to get project language");
+                    None
+                }
+            };
+            info!("Detected {} as your project language", detected.unwrap());
+            
         }
     }
 }
