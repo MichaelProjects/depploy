@@ -10,7 +10,7 @@ Simply specify the name and the version in your application config, and depploy 
 cargo install depploy
 ```
 
-## Usage
+## Usage (command: Run)
 Depploy is pretty simple, type:
 ```bash
 depploy run
@@ -28,6 +28,15 @@ the config needs to contain following keys:
 
 more configuration file are coming.
 
+## Usage (command: generate)
+This command uses the specified path and index all file extionsion with that are not ignore via the ".gitignore". If the programming language is currently supported by depploy, it will create a dockerfile in the root of your folder.
+
+```bash
+depploy generate
+```
+### Language not supported?
+You are welcome to submit a pull request to the "dockerfile" branch to add your basic instruction file to depploy.
+
 ## Specifying Private Registry:
 Depploy pushes without any configuration to the docker hub,
 if you want to change this then you need to create following configuration file:
@@ -42,5 +51,12 @@ these are the features that should be added in the near future.
 
 - Improved status and exit messages
 - Better docker deamon handling
-- Logging
-- Dockerfile generator
+
+## Changelog
+### 0.2.0 
+- Added generate command
+- Improved error handling for run command
+- added brew formula
+
+### 0.1.0 
+- inital release with run command
