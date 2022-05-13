@@ -11,6 +11,8 @@ pub enum Command {
         dir: PathBuf,
         #[structopt(short = "f", long = "file", default_value = "dockerfile", help = "Which should be used to get the instrcutions from")]
         dockerfile_name: String,
+        #[structopt(short = "p", long = "public", help="Will push the repo to hub.docker.com container registry")]
+        public_repo: bool,
         #[structopt(short = "nl", long = "no-latest", help="Should not build and push the latest tag to the registry")]
         no_latest: bool,
         #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]

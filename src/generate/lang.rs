@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     error::Error,
     ffi::OsString,
     fs::{self, File},
@@ -6,6 +7,7 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
 };
+use log::{info, debug, error, trace, warn};
 
 use crate::models::language::Language;
 
@@ -39,33 +41,51 @@ fn get_filesnames(
     return Ok(Some(list));
 }
 
-fn analyzse_dir_struct(files: Vec<OsString>) {
+fn analyzse_dir_struct(files: Vec<OsString>) -> Option<String> {
+    let mut map = HashMap::new();
     for file in files.iter() {
         let filename = file.to_str().unwrap();
         if filename.contains(".") {
-            let y = filename.split(".").last();
-            println!("{:?}", y.unwrap());
+            let y = filename.split(".").last().unwrap().to_string();
+            let count = map.entry(y).or_insert(0);
+            *count += 1;
         }
     }
+    let key_with_max_value = map.iter().max_by_key(|entry | entry.1).unwrap();
+    Some(key_with_max_value.0.clone())   
 }
 
 pub async fn get_project_language(
     mut depploy_dir: PathBuf,
 ) -> Result<Vec<Language>, Box<dyn Error>> {
     depploy_dir.push("languages.json");
-    println!("{:?}", depploy_dir);
+    let url = "https://raw.githubusercontent.com/MichaelProjects/depploy/dev/languages.json";
     if !depploy_dir.exists() {
-        println!("Fetching");
+        debug!("Fetching languages from {}", url);
         let response = reqwest::get(
-            "https://raw.githubusercontent.com/MichaelProjects/depploy/dev/languages.json",
-        ).await?;
+            url
+        )
+        .await?;
         let body = response.text().await?;
-        let mut out = File::create(&depploy_dir).expect("Could not create file please run again with sudo");
+        let mut out =
+            File::create(&depploy_dir).expect("Could not create file please run again with sudo");
         io::copy(&mut body.as_bytes(), &mut out)?;
     }
     let content = fs::read_to_string(depploy_dir)?;
     let languages: Vec<Language> = serde_json::from_str(content.as_str())?;
     return Ok(languages);
+}
+
+fn read_git_ignore(path: &PathBuf) -> Result<Option<Vec<&str>>, Box<dyn Error>> {
+    let mut complete_path = path.clone();
+    complete_path.push(".gitignore");
+    if complete_path.exists() {
+        let content = fs::read_to_string(complete_path)?;
+        let splitted = content.split("\n").collect::<Vec<&str>>();
+        Ok(Some(splitted));
+    }
+    error!("No gitignore found, will also index build files");
+    return Ok(None)
 }
 
 #[test]
@@ -89,8 +109,8 @@ fn test_analyse_dir_structures() {
         "git".to_string(),
     ];
     let abc = get_filesnames(&path, &exclude_dirs);
-    analyzse_dir_struct(abc.unwrap().unwrap());
-    assert_eq!(false, true)
+    let project_lang = analyzse_dir_struct(abc.unwrap().unwrap());
+    assert_eq!(project_lang.unwrap(), "rs")
 }
 
 #[tokio::test]
@@ -98,4 +118,11 @@ async fn test_load_languages() {
     let depploy_dir = PathBuf::from_str("/etc/depploy").unwrap();
     let result = get_project_language(depploy_dir).await.unwrap();
     assert_eq!(result.len(), 0)
+}
+
+#[test]
+fn test_load_gitignore(){
+    let path = PathBuf::from_str("/home/michaell/development/depploy").unwrap();
+    read_git_ignore(&path).unwrap().unwrap();
+    assert!(false)
 }

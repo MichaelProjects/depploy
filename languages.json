@@ -1288,10 +1288,6 @@
        ]
     },
     {
-       "name":"Isabelle ROOT",
-       "usage":"programming"
-    },
-    {
        "name":"J",
        "usage":"programming",
        "extensions":[
@@ -1747,10 +1743,6 @@
           ".matlab",
           ".m"
        ]
-    },
-    {
-       "name":"Maven POM",
-       "usage":"data"
     },
     {
        "name":"Max",

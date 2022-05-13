@@ -3,7 +3,6 @@ mod commands;
 mod conf;
 mod generate;
 mod io;
-mod http;
 mod models;
 
 use std::fs::{self, Permissions};
@@ -12,6 +11,8 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use generate::lang::get_project_language;
 use tokio;
+use log::{info, trace, warn, LevelFilter};
+use simple_logger::SimpleLogger;
 
 use crate::build::{build_image, create_tag, push_image, set_latest_tag};
 use crate::conf::read_depploy_conf;
@@ -50,15 +51,26 @@ async fn main() {
         Command::Run {
             dir,
             debug,
+            public_repo,
             dockerfile_name,
             no_latest,
         } => {
+            let logger = SimpleLogger::new();
+            if debug == &true {
+                SimpleLogger::with_level(logger, LevelFilter::Debug).init().unwrap()
+            }else{
+                SimpleLogger::with_level(logger, LevelFilter::Info).init().unwrap()
+            }
+            
             // Gets the depploy config data
             let build_dir = build_dir(dir);
-            let depploy = match read_depploy_conf(&depploy_dir) {
-                Ok(depploy) => depploy,
-                Err(err) => panic!("{}", err),
-            };
+            let depploy = read_depploy_conf(&depploy_dir);
+            let mut registry = String::new();
+            if depploy.is_err() || public_repo == &true {
+                warn!("No depploy config found, will push to hub.docker.com")
+            }else{
+                registry = depploy.unwrap().docker_registry;
+            }
 
             // load the project config file
 
@@ -70,7 +82,7 @@ async fn main() {
             let data = get_info(config_data);
 
             // uses docker
-            let tag = create_tag(&data, depploy.docker_registry);
+            let tag = create_tag(&data, registry);
             let name = tag.first().expect("Image name not found");
             let tag = tag.last().expect("Image tag not found");
 
