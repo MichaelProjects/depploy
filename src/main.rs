@@ -3,11 +3,14 @@ mod commands;
 mod conf;
 mod generate;
 mod io;
-mod commands;
-mod search;
+mod http;
+mod models;
 
+use std::fs::{self, Permissions};
+use std::os::unix::prelude::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+use generate::lang::get_project_language;
 use tokio;
 
 use crate::build::{build_image, create_tag, push_image, set_latest_tag};
@@ -31,6 +34,16 @@ pub struct Depploy {
 #[tokio::main]
 async fn main() {
     let depploy_dir =  PathBuf::from_str("/etc/depploy").unwrap();
+    
+    // checks if the depploy directory exists
+    if !depploy_dir.exists(){
+        if fs::create_dir(&depploy_dir).is_err(){
+         panic!("Missing permisson to create depploy directory /etc/depploy, run again with sudo or create it yourself.")
+        }
+        if fs::set_permissions(&depploy_dir, Permissions::from_mode(0o777)).is_err(){
+            panic!("Couldn't set permissions")
+        }
+    }
     let cli = Depploy::from_args();
 
     match &cli.cmd {
@@ -71,11 +84,11 @@ async fn main() {
                 push_image(&latest_tag);
             }
         } 
-        Command::Search { host, debug } => {
+        /*Command::Search { host, debug } => {
             println!("needs to be implemented");
-        },
+        },*/
         Command::Generate { dir, language } => {
-            println!("needs to be implemented");
+            let languages = get_project_language(depploy_dir).await;
         }
     }
 }

@@ -17,12 +17,12 @@ pub enum Command {
         debug: bool
     },
     #[structopt(about = "Search for docker images in registry")]
-    Search{
+    /*Search{
         host: String,
         #[structopt(short = "v")]
         debug: bool
 
-    },
+    },*/
     #[structopt(about = "Generate a dockerfile with minimal instrcutions, detects language")]
     Generate{
         #[structopt(parse(from_os_str), default_value = ".")]
