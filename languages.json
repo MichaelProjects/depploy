@@ -97,10 +97,6 @@
        ]
     },
     {
-       "name":"Ant Build System",
-       "usage":"data"
-    },
-    {
        "name":"ApacheConf",
        "usage":"markup",
        "extensions":[
