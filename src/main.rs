@@ -5,7 +5,7 @@ mod generate;
 mod io;
 mod models;
 
-use generate::lang::{create_project_analysis, get_project_language};
+use generate::lang::{create_project_analysis, get_project_language, get_predefined_dockerfiles};
 use log::{error, info, trace, warn, LevelFilter};
 use simple_logger::SimpleLogger;
 use std::fs::{self, Permissions};
@@ -45,7 +45,12 @@ async fn main() {
             panic!("Couldn't set permissions")
         }
         get_project_language(&depploy_dir).await;
+        
     }
+    let response = get_predefined_dockerfiles(&depploy_dir);
+        response.unwrap();
+
+        
     let cli = Depploy::from_args();
     let logger = SimpleLogger::new();
 

@@ -10,6 +10,7 @@ use std::{
 };
 
 use crate::models::language::Language;
+use git2::Repository;
 
 fn get_filesnames(
     path: &PathBuf,
@@ -57,7 +58,7 @@ fn analyzse_dir_struct(files: Vec<OsString>) -> Option<String> {
     if key_with_max_value.is_some() {
         return Some(key_with_max_value.unwrap().0.clone());
     }
-    return None
+    return None;
 }
 
 pub async fn get_project_language(depploy_dir: &PathBuf) -> Result<Vec<Language>, Box<dyn Error>> {
@@ -75,6 +76,16 @@ pub async fn get_project_language(depploy_dir: &PathBuf) -> Result<Vec<Language>
     let content = fs::read_to_string(path)?;
     let languages: Vec<Language> = serde_json::from_str(content.as_str())?;
     return Ok(languages);
+}
+
+pub fn get_predefined_dockerfiles(depploy_dir: &PathBuf) -> Result<Vec<String>, Box<dyn Error>> {
+    let mut path = depploy_dir.clone();
+    path.push("pre-defined_dockerfiles");
+    let url = "https://github.com/MichaelProjects/depploy/tree/dockerfiles/pre-defined_dockerfiles";
+    if !path.exists() {
+        let repo = Repository::clone(url, path)?;   
+    }
+    Ok(vec![String::new()])
 }
 
 fn read_git_ignore(path: &PathBuf) -> Result<Option<Vec<String>>, Box<dyn Error>> {
