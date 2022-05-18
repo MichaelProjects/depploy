@@ -6,11 +6,11 @@ use std::{
     fs::{self, File},
     io,
     path::{Path, PathBuf},
-    str::FromStr,
+    str::FromStr, ascii::AsciiExt,
 };
 
 use crate::models::language::Language;
-use git2::Repository;
+use git2::{Repository, build::CheckoutBuilder};
 
 fn get_filesnames(
     path: &PathBuf,
@@ -81,9 +81,12 @@ pub async fn get_project_language(depploy_dir: &PathBuf) -> Result<Vec<Language>
 pub fn get_predefined_dockerfiles(depploy_dir: &PathBuf) -> Result<Vec<String>, Box<dyn Error>> {
     let mut path = depploy_dir.clone();
     path.push("pre-defined_dockerfiles");
-    let url = "https://github.com/MichaelProjects/depploy/tree/dockerfiles/pre-defined_dockerfiles";
+    let url = "https://github.com/MichaelProjects/depploy";
     if !path.exists() {
+        let branch_name = "refs/heads/dockerfiles";
         let repo = Repository::clone(url, path)?;
+        repo.set_head(branch_name)?;
+
     }
     Ok(vec![String::new()])
 }
@@ -133,7 +136,7 @@ fn test_dir_structre() {
         "git".to_string(),
     ];
     let abc = get_filesnames(&path, &exclude_dirs);
-    assert_eq!(abc.unwrap().unwrap().len(), 0)
+    assert_ne!(abc.unwrap().unwrap().len(), 0)
 }
 
 #[test]
@@ -153,7 +156,7 @@ fn test_analyse_dir_structures() {
 async fn test_load_languages() {
     let depploy_dir = PathBuf::from_str("/etc/depploy").unwrap();
     let result = get_project_language(&depploy_dir).await.unwrap();
-    assert_eq!(result.len(), 0)
+    assert_ne!(result.len(), 0)
 }
 
 #[test]
@@ -161,12 +164,14 @@ fn test_load_gitignore() {
     let path = PathBuf::from_str("/home/michael/Development/depploy").unwrap();
     let result = read_git_ignore(&path).unwrap().unwrap();
     println!("{:?}", result);
-    assert_eq!(result.len(), 0)
+    assert_ne!(result.len(), 0)
 }
 
+/* 
 #[test]
 fn test_clone_predefine(){
     let path = PathBuf::from_str("/home/michael/Development/depploy").unwrap();
     let result = get_predefined_dockerfiles(&path);
     result.unwrap();
-}
+    assert!(false);
+}*/
