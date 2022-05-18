@@ -83,7 +83,7 @@ pub fn get_predefined_dockerfiles(depploy_dir: &PathBuf) -> Result<Vec<String>, 
     path.push("pre-defined_dockerfiles");
     let url = "https://github.com/MichaelProjects/depploy/tree/dockerfiles/pre-defined_dockerfiles";
     if !path.exists() {
-        let repo = Repository::clone(url, path)?;   
+        let repo = Repository::clone(url, path)?;
     }
     Ok(vec![String::new()])
 }
@@ -162,4 +162,11 @@ fn test_load_gitignore() {
     let result = read_git_ignore(&path).unwrap().unwrap();
     println!("{:?}", result);
     assert_eq!(result.len(), 0)
+}
+
+#[test]
+fn test_clone_predefine(){
+    let path = PathBuf::from_str("/home/michael/Development/depploy").unwrap();
+    let result = get_predefined_dockerfiles(&path);
+    result.unwrap();
 }
