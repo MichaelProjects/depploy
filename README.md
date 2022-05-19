@@ -42,7 +42,7 @@ Depploy pushes without any configuration to the docker hub,
 if you want to change this then you need to create following configuration file:
 
 ```bash
-nano /etc/depploy/settings.toml
+nano "~/.depploy/settings.toml
 ```
 the content should be look like the "example_settings.toml".
 

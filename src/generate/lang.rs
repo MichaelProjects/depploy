@@ -78,18 +78,7 @@ pub async fn get_project_language(depploy_dir: &PathBuf) -> Result<Vec<Language>
     return Ok(languages);
 }
 
-pub fn get_predefined_dockerfiles(depploy_dir: &PathBuf) -> Result<Vec<String>, Box<dyn Error>> {
-    let mut path = depploy_dir.clone();
-    path.push("pre-defined_dockerfiles");
-    let url = "https://github.com/MichaelProjects/depploy";
-    if !path.exists() {
-        let branch_name = "refs/heads/dockerfiles";
-        let repo = Repository::clone(url, path)?;
-        repo.set_head(branch_name)?;
 
-    }
-    Ok(vec![String::new()])
-}
 
 fn read_git_ignore(path: &PathBuf) -> Result<Option<Vec<String>>, Box<dyn Error>> {
     let mut to_ignore = vec!["git".to_string()];
@@ -154,7 +143,7 @@ fn test_analyse_dir_structures() {
 
 #[tokio::test]
 async fn test_load_languages() {
-    let depploy_dir = PathBuf::from_str("/etc/depploy").unwrap();
+    let depploy_dir = PathBuf::from_str("/Users/michael/.depploy").unwrap();
     let result = get_project_language(&depploy_dir).await.unwrap();
     assert_ne!(result.len(), 0)
 }
@@ -166,12 +155,3 @@ fn test_load_gitignore() {
     println!("{:?}", result);
     assert_ne!(result.len(), 0)
 }
-
-/* 
-#[test]
-fn test_clone_predefine(){
-    let path = PathBuf::from_str("/home/michael/Development/depploy").unwrap();
-    let result = get_predefined_dockerfiles(&path);
-    result.unwrap();
-    assert!(false);
-}*/

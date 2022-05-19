@@ -4,8 +4,10 @@ mod conf;
 mod generate;
 mod io;
 mod models;
+use std::env;
 
-use generate::lang::{create_project_analysis, get_project_language, get_predefined_dockerfiles};
+use generate::files::get_predefined_dockerfiles;
+use generate::lang::{create_project_analysis, get_project_language};
 use log::{error, info, trace, warn, LevelFilter};
 use simple_logger::SimpleLogger;
 use std::fs::{self, Permissions};
@@ -32,23 +34,35 @@ pub struct Depploy {
     pub cmd: Command,
 }
 
+fn build_depploy_path() -> String{
+    let username = whoami::username();
+    match (env::consts::OS){
+        "macos" => return format!("/Users/{}/.depploy", username),
+        "linux" => return format!("/home/{}/.depploy", username),
+        "windows" => return format!("/home/{}/.depploy", username),
+        other => return String::new()
+    }
+}
+
 #[tokio::main]
 async fn main() {
-    let depploy_dir = PathBuf::from_str("/etc/depploy").unwrap();
+    let path = build_depploy_path();
+    if path == String::new(){
+        panic!("OS not supported")
+    }
+    let depploy_dir = PathBuf::from_str(&path.as_str()).unwrap();
 
     // checks if the depploy directory exists
     if !depploy_dir.exists() {
         if fs::create_dir(&depploy_dir).is_err() {
-            panic!("Missing permisson to create depploy directory /etc/depploy, run again with sudo or create it yourself.")
+            panic!("Missing permisson to create depploy directory {}, run again with sudo.", path)
         }
-        if fs::set_permissions(&depploy_dir, Permissions::from_mode(0o777)).is_err() {
-            panic!("Couldn't set permissions")
-        }
+
         get_project_language(&depploy_dir).await;
+        get_predefined_dockerfiles(&depploy_dir);
+        
         
     }
-    let response = get_predefined_dockerfiles(&depploy_dir);
-        response.unwrap();
 
         
     let cli = Depploy::from_args();
@@ -74,7 +88,7 @@ async fn main() {
 
             // Gets the depploy config data
             let build_dir = build_dir(dir);
-            let depploy = read_depploy_conf(&depploy_dir);
+            let depploy = read_depploy_conf(&depploy_dir).await;
             let mut registry = String::new();
             if depploy.is_err() || public_repo == &true {
                 warn!("No depploy config found, will push to hub.docker.com")
