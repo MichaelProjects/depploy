@@ -215,8 +215,8 @@ fn test_clone_predefine(){
     let result = get_predefined_dockerfiles(&path);
 }
 
-#[test]fn test_load_predefines(){
+/*#[test]fn test_load_predefines(){
     let path = PathBuf::from_str("/Users/michael/.depploy").unwrap();
     let current_path = PathBuf::from_str("/Users/michael/Documents/Programming/rust/depploy").unwrap();
     load_predefined_languages(&path, &String::from("rs"), current_path).unwrap();
-}
+}*/
