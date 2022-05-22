@@ -57,7 +57,6 @@ these are the features that should be added in the near future.
 ### 0.2.0 
 - Added generate command.
 - Improved error handling for run command.
-- added brew formula.
 - moved depploy dir into home directory of user.
 
 ### 0.1.0 
