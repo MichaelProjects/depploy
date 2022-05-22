@@ -18,6 +18,7 @@ use tokio;
 
 use crate::build::{build_image, create_tag, push_image, set_latest_tag};
 use crate::conf::read_depploy_conf;
+use crate::generate::files::load_predefined_languages;
 use crate::io::{build_dir, get_info, load_project_file, match_config};
 use commands::Command;
 use structopt::StructOpt;
@@ -137,6 +138,12 @@ async fn main() {
             if dir.eq(&PathBuf::from_str(".").unwrap()) {
                 path = std::env::current_dir().unwrap()
             }
+            if language != &String::new(){
+                match load_predefined_languages(&depploy_dir, language, path.clone()){
+                    Ok(a) => a,
+                    Err(err) => error!("Not able to create dockerfile: {:?}", err)
+                };
+            }else{
             let detected = match create_project_analysis(&path) {
                 Ok(lang) => lang,
                 Err(err) => {
@@ -144,8 +151,15 @@ async fn main() {
                     None
                 }
             };
-            info!("Detected {} as your project language", detected.unwrap());
-            
-        }
+            if detected.is_some(){
+                let lang = detected.unwrap();
+                info!("Detected {} as your project language", &lang);
+
+                match load_predefined_languages(&depploy_dir, &lang, path.clone()){
+                    Ok(a) => a,
+                    Err(err) => error!("Not able to create dockerfile: {:?}", err)
+                };
+            }            
+        }}
     }
 }

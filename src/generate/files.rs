@@ -1,7 +1,8 @@
 use std::{path::PathBuf, error::Error, str::FromStr, io::{self, Write}, process::Command};
 
 use git2::{Repository, FetchOptions};
-
+use std::fs;
+use log::{error, info, trace, warn, debug, LevelFilter};
 
 
 pub fn get_predefined_dockerfiles(depploy_dir: &PathBuf) -> Result<Vec<String>, Box<dyn Error>> {
@@ -22,8 +23,23 @@ pub fn get_predefined_dockerfiles(depploy_dir: &PathBuf) -> Result<Vec<String>, 
     Ok(vec![String::new()])
 }
 
-pub fn load_predefined_languages(depploy_dir: &PathBuf){
-    
+pub fn load_predefined_languages(depploy_dir: &PathBuf, language: &String, mut current_dir: PathBuf) -> Result<(), Box<dyn Error>> {
+    let mut path = depploy_dir.clone();
+    path.push("pre-defined_dockerfiles");
+    let dir =  fs::read_dir(&path)?;
+    for file in dir{
+        let filename = String::from(file?.file_name().to_str().unwrap());
+        if !filename.starts_with("."){
+            if filename.starts_with(language){
+                path.push(filename);
+                current_dir.push("dockerfile");
+                fs::copy(path, current_dir)?;
+                return Ok(());
+            }
+        }
+    }
+    warn!("No pre-defined dockerfile found, try the file extension eg. py, rs");
+    Ok(())
 }
 
 fn do_fetch<'a>(
@@ -59,14 +75,14 @@ fn do_fetch<'a>(
     // Always fetch all tags.
     // Perform a download and also update tips
     fo.download_tags(git2::AutotagOption::All);
-    println!("Fetching {} for repo", remote.name().unwrap());
+    debug!("Fetching {} for repo", remote.name().unwrap());
     remote.fetch(refs, Some(&mut fo), None)?;
 
     // If there are local objects (we got a thin pack), then tell the user
     // how many objects we saved from having to cross the network.
     let stats = remote.stats();
     if stats.local_objects() > 0 {
-        println!(
+        debug!(
             "\rReceived {}/{} objects in {} bytes (used {} local \
              objects)",
             stats.indexed_objects(),
@@ -75,7 +91,7 @@ fn do_fetch<'a>(
             stats.local_objects()
         );
     } else {
-        println!(
+        debug!(
             "\rReceived {}/{} objects in {} bytes",
             stats.indexed_objects(),
             stats.total_objects(),
@@ -97,7 +113,7 @@ fn fast_forward(
         None => String::from_utf8_lossy(lb.name_bytes()).to_string(),
     };
     let msg = format!("Fast-Forward: Setting {} to id: {}", name, rc.id());
-    println!("{}", msg);
+    debug!("{}", msg);
     lb.set_target(rc.id(), &msg)?;
     repo.set_head(&name)?;
     repo.checkout_head(Some(
@@ -123,7 +139,7 @@ fn normal_merge(
     let mut idx = repo.merge_trees(&ancestor, &local_tree, &remote_tree, None)?;
 
     if idx.has_conflicts() {
-        println!("Merge conficts detected...");
+        debug!("Merge conficts detected...");
         repo.checkout_index(Some(&mut idx), None)?;
         return Ok(());
     }
@@ -157,7 +173,7 @@ fn do_merge<'a>(
 
     // 2. Do the appopriate merge
     if analysis.0.is_fast_forward() {
-        println!("Doing a fast forward");
+        debug!("Doing a fast forward");
         // do a fast forward
         let refname = format!("refs/heads/{}", remote_branch);
         match repo.find_reference(&refname) {
@@ -188,7 +204,7 @@ fn do_merge<'a>(
         let head_commit = repo.reference_to_annotated_commit(&repo.head()?)?;
         normal_merge(&repo, &head_commit, &fetch_commit)?;
     } else {
-        println!("Nothing to do...");
+        debug!("Nothing to do...");
     }
     Ok(())
 }
@@ -197,6 +213,10 @@ fn do_merge<'a>(
 fn test_clone_predefine(){
     let path = PathBuf::from_str("/home/michael/.depploy").unwrap();
     let result = get_predefined_dockerfiles(&path);
-    result.unwrap();
-    assert!(false);
+}
+
+#[test]fn test_load_predefines(){
+    let path = PathBuf::from_str("/Users/michael/.depploy").unwrap();
+    let current_path = PathBuf::from_str("/Users/michael/Documents/Programming/rust/depploy").unwrap();
+    load_predefined_languages(&path, &String::from("rs"), current_path).unwrap();
 }

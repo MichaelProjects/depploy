@@ -1,4 +1,4 @@
-use std::{fs, path::{Path, PathBuf}};
+use std::{fs, path::{Path, PathBuf}, env};
 
 pub struct Config {
     pub version: String,
@@ -10,6 +10,16 @@ impl Config {
             version: String::from(version),
             name: String::from(name),
         }
+    }
+}
+
+fn build_depploy_path() -> String{
+    let username = whoami::username();
+    match (env::consts::OS){
+        "macos" => return format!("/Users/{}/.depploy", username),
+        "linux" => return format!("/home/{}/.depploy", username),
+        "windows" => return format!("/home/{}/.depploy", username),
+        other => return String::new()
     }
 }
 

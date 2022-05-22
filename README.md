@@ -35,7 +35,7 @@ This command uses the specified path and index all file extionsion with that are
 depploy generate
 ```
 ### Language not supported?
-You are welcome to submit a pull request to the "dockerfile" branch to add your basic instruction file to depploy.
+You are welcome to submit a pull request to the [dockerfile](https://github.com/MichaelProjects/depploy/tree/dockerfiles) branch to add your basic instruction file to depploy.
 
 ## Specifying Private Registry:
 Depploy pushes without any configuration to the docker hub,
@@ -51,12 +51,14 @@ these are the features that should be added in the near future.
 
 - Improved status and exit messages
 - Better docker deamon handling
+- Generate subcommands like list files, add files (custom or create pull request).
 
 ## Changelog
 ### 0.2.0 
-- Added generate command
-- Improved error handling for run command
-- added brew formula
+- Added generate command.
+- Improved error handling for run command.
+- added brew formula.
+- moved depploy dir into home directory of user.
 
 ### 0.1.0 
-- inital release with run command
+- inital release with run command.
