@@ -54,6 +54,7 @@ these are the features that should be added in the near future.
 - Generate subcommands like list files, add files (custom or create pull request).
 
 ## Changelog
+
 ### 0.2.0 
 - Added generate command.
 - Improved error handling for run command.
