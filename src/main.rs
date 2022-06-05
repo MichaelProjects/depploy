@@ -117,14 +117,15 @@ async fn main() {
             let tag = create_tag(&data, registry);
             let name = tag.first().expect("Image name not found");
             let tag = tag.last().expect("Image tag not found");
+            
+            let latest_tag = set_latest_tag(name, &tag);
 
-            build_image(&tag, build_dir.as_str(), dockerfile_name);
+            build_image(&tag, build_dir.as_str(), dockerfile_name, &no_latest, &latest_tag);
 
             push_image(&tag);
 
             // sets label to latest build and then pushes it also to the registry
             if no_latest.ne(&true) {
-                let latest_tag = set_latest_tag(name, &tag);
                 push_image(&latest_tag);
             }
         }
