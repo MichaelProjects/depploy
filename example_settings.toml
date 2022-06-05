@@ -2,5 +2,4 @@
 
 # Registry
 # docker_registry="docker-registry.example.com:5000"
-
-
+# docker_hub_username="YourDockerHubUsername"

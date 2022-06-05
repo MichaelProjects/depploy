@@ -6,13 +6,14 @@ use log::{debug, error, info, trace, warn};
 use std::error::Error;
 
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct DepployConfig {
     pub docker_registry: String,
+    pub docker_hub_username: Option<String>
 }
 impl DepployConfig{
-    pub fn new(docker_registry: &str) -> Self{
-        DepployConfig{docker_registry: docker_registry.to_string()}
+    pub fn new(docker_registry: &str, docker_hub_username: Option<String>) -> Self{
+        DepployConfig{docker_registry: docker_registry.to_string(), docker_hub_username}
     }
 }
 
