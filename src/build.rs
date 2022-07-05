@@ -38,10 +38,10 @@ pub fn build_image(image_tag: &String, dir: &str, dockerfile_name: &String, no_l
             .expect("Could not build Image");
     }
     if output.stderr.len() != 0 {
-        panic!(
-            "{}",
-            String::from_utf8(output.stderr).expect("Could not decode process output")
-        );
+        // panic!(
+        //     "{}",
+        //     String::from_utf8(output.stderr).expect("Could not decode process output")
+        // );
     }
     let output_str = String::from_utf8(output.stdout).expect("Could not decode process output");
     debug!("Building Output: {:?}", output_str);
@@ -54,10 +54,10 @@ pub fn push_image(image_tag: &String) {
         .output()
         .expect("Could not push Image");
     if output.stderr.len() > 0 {
-        panic!(
-            "{}",
-            String::from_utf8(output.stderr).expect("Could not decode process output")
-        );
+        // panic!(
+        //     "{}",
+        //     String::from_utf8(output.stderr).expect("Could not decode process output")
+        // );
     }
     let output_str = String::from_utf8(output.stdout).expect("Could not decode process output");
     debug!("Pushing Output: {:?}", output_str);
