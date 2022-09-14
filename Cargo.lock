@@ -194,20 +194,15 @@ dependencies = [
 
 [[package]]
 name = "depploy"
-version = "0.2.3"
+version = "0.3.0"
 dependencies = [
- "base64",
  "depploy-logic",
  "env_logger",
- "git2",
  "log",
- "reqwest",
  "serde 1.0.144",
  "serde_json",
- "shiplift",
  "simple_logger",
  "structopt",
- "text_io",
  "tokio",
  "toml",
  "whoami",

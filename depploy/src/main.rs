@@ -8,16 +8,14 @@ use depploy_logic::conf::read_depploy_conf;
 use depploy_logic::generate::files::{get_predefined_dockerfiles, load_predefined_languages};
 use depploy_logic::generate::lang::{get_project_language, create_project_analysis};
 use depploy_logic::io::{build_dir, match_config, load_project_file, ProjectConf, get_info};
-use log::{error, info, trace, warn, LevelFilter};
+use log::{error, info, warn, LevelFilter};
 use simple_logger::SimpleLogger;
-use std::fs::{self, Permissions};
-use std::os::unix::prelude::PermissionsExt;
-use std::path::{Path, PathBuf};
+use std::fs::{self};
+use std::path::{PathBuf};
 use std::str::FromStr;
 use tokio;
 
 use structopt::StructOpt;
-use text_io::scan;
 
 #[derive(StructOpt)]
 #[structopt(
@@ -32,7 +30,7 @@ pub struct Depploy {
 
 fn build_depploy_path() -> String {
     let username = whoami::username();
-    match (env::consts::OS) {
+    match env::consts::OS {
         "macos" => return format!("/Users/{}/.depploy", username),
         "linux" => return format!("/home/{}/.depploy", username),
         "windows" => return format!("/home/{}/.depploy", username),

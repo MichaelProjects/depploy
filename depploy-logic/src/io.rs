@@ -1,6 +1,5 @@
 use std::{fs::{self}, path::{Path, PathBuf}, env};
 
-use config::{ConfigError, Config, File};
 use serde::Deserialize;
 
 
@@ -21,7 +20,7 @@ impl ProjectConf {
 
 pub fn build_depploy_path() -> String{
     let username = whoami::username();
-    match (env::consts::OS){
+    match env::consts::OS{
         "macos" => return format!("/Users/{}/.depploy", username),
         "linux" => return format!("/home/{}/.depploy", username),
         "windows" => return format!("/home/{}/.depploy", username),
