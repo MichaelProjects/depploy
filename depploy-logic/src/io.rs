@@ -1,19 +1,25 @@
-use std::{fs, path::{Path, PathBuf}, env};
+use std::{fs::{self}, path::{Path, PathBuf}, env};
 
-pub struct Config {
+use config::{ConfigError, Config, File};
+use serde::Deserialize;
+
+
+#[derive(Deserialize, Debug)]
+pub struct ProjectConf {
     pub version: String,
     pub name: String,
 }
-impl Config {
-    fn new(version: &str, name: &str) -> Config {
-        Config {
+
+impl ProjectConf {
+    fn new(version: &str, name: &str) -> ProjectConf {
+        ProjectConf {
             version: String::from(version),
             name: String::from(name),
         }
     }
 }
 
-fn build_depploy_path() -> String{
+pub fn build_depploy_path() -> String{
     let username = whoami::username();
     match (env::consts::OS){
         "macos" => return format!("/Users/{}/.depploy", username),
@@ -26,13 +32,9 @@ fn build_depploy_path() -> String{
 pub fn match_config(dir: &PathBuf) -> String {
     //!
     //! has given filenames and if one of the files a in the specified directory, then it will return the name of the config file.
-    //! 
-    //! Example:
-    //! ```
-    //! match_config(&PathBuf::from("/home/user/project/"));
-    //! ```
     let config_names = vec!["Cargo.toml"];
     let result = find_conf(dir, config_names);
+    
     if result.eq(""){
         let configs = vec!["conf", "config"];
         let result = find_conf(dir, configs);
@@ -66,8 +68,13 @@ pub fn load_project_file(path: &PathBuf, filename: &String) -> std::io::Result<S
     fs::read_to_string(filename)
 }
 
-pub fn get_info(config_data: String) -> Config {
-    let mut content = Config::new("", "");
+pub fn parse_line(line: &str) -> String {
+    let vec = line.split("=").collect::<Vec<&str>>();
+    return vec[1].replace("\"", "").to_string();
+}
+
+pub fn get_info(config_data: String) -> ProjectConf {
+    let mut content = ProjectConf::new("", "");
     for line in config_data.lines() {
         if line.contains("version") {
             content.version = parse_line(line);
@@ -80,19 +87,11 @@ pub fn get_info(config_data: String) -> Config {
     content
 }
 
-pub fn parse_line(line: &str) -> String {
-    let vec = line.split("=").collect::<Vec<&str>>();
-    return vec[1].replace("\"", "").to_string();
-}
-
 pub fn build_dir(dir: &Path) -> String {
     let dir_str = dir.to_str().expect("Path");
     if dir_str.ne(".") {
-        let a = format!("{}/.",dir_str );
+        let a = format!("{}",dir_str );
         return a
     }
     ".".to_string()
 }
-
-#[test]
-fn test_find_config(){}

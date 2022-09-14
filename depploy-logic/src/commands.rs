@@ -33,5 +33,28 @@ pub enum Command {
         language: String,
         #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
         debug: bool
+    },
+    Prototype{
+        #[structopt(subcommand)]
+        command: Prototype
+    }
+}
+
+#[derive(StructOpt, PartialEq, Debug)]
+#[structopt(about = "Prototype subcommand")]
+pub enum Prototype {
+    #[structopt(about = "Create a new Prototype")]
+    Create{
+        #[structopt(parse(from_os_str), default_value = ".")]
+        dir: PathBuf,
+        #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
+        debug: bool
+    },
+    #[structopt(about = "Upload config file")]
+    Upload{
+        #[structopt(parse(from_os_str), default_value = ".")]
+        dir: PathBuf,
+        #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
+        debug: bool
     }
 }

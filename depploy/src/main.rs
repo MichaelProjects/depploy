@@ -1,13 +1,13 @@
-mod build;
-mod commands;
-mod conf;
-mod generate;
-mod io;
-mod models;
+
 use std::env;
 
-use generate::files::get_predefined_dockerfiles;
-use generate::lang::{create_project_analysis, get_project_language};
+
+use depploy_logic::build::{create_tag, set_latest_tag, build_image, push_image};
+use depploy_logic::commands::Command;
+use depploy_logic::conf::read_depploy_conf;
+use depploy_logic::generate::files::{get_predefined_dockerfiles, load_predefined_languages};
+use depploy_logic::generate::lang::{get_project_language, create_project_analysis};
+use depploy_logic::io::{build_dir, match_config, load_project_file, ProjectConf, get_info};
 use log::{error, info, trace, warn, LevelFilter};
 use simple_logger::SimpleLogger;
 use std::fs::{self, Permissions};
@@ -16,11 +16,6 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use tokio;
 
-use crate::build::{build_image, create_tag, push_image, set_latest_tag};
-use crate::conf::read_depploy_conf;
-use crate::generate::files::load_predefined_languages;
-use crate::io::{build_dir, get_info, load_project_file, match_config};
-use commands::Command;
 use structopt::StructOpt;
 use text_io::scan;
 
@@ -94,20 +89,21 @@ async fn main() {
             if depploy.is_err() || public_repo == &true {
                 if !depploy.is_err() {
                     let conf = depploy.unwrap();
-                    if conf.docker_hub_username.is_some() {
-                        registry = conf.docker_hub_username.unwrap();
+                    if conf.registry.docker_hub_username.is_some() {
+                        registry = conf.registry.docker_hub_username.unwrap();
                     }
                 } else {
                     warn!("No depploy config found, will push to hub.docker.com");
                 }
             } else {
-                registry = depploy.unwrap().docker_registry;
+                registry = depploy.unwrap().registry.docker_registry;
             }
 
             // load the project config file
-
-            let filename = match_config(dir);
-            let config_data = match load_project_file(dir, &filename) {
+            
+            
+            let filename = match_config(&dir);
+            let config_data = match load_project_file(&dir, &filename) {
                 Ok(data) => data,
                 Err(err) => panic!("Error: {}", err),
             };
@@ -118,9 +114,9 @@ async fn main() {
             let name = tag.first().expect("Image name not found");
             let tag = tag.last().expect("Image tag not found");
             
-            let latest_tag = set_latest_tag(name, &tag);
+            let latest_tag = set_latest_tag(name);
 
-            build_image(&tag, build_dir.as_str(), dockerfile_name, &no_latest, &latest_tag);
+            build_image(&tag, build_dir.as_str(), dockerfile_name, &no_latest, &latest_tag).await;
 
             push_image(&tag);
 
@@ -132,6 +128,8 @@ async fn main() {
         /*Command::Search { host, debug } => {
             println!("needs to be implemented");
         },*/
+        Command::Prototype { command } => {
+         }
         Command::Generate {
             dir,
             language,

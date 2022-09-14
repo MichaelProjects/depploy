@@ -1,5 +1,11 @@
 # Depploy settings, uncomment the key and add your values to the prefefined keys.
 
-# Registry
+[registry]
 # docker_registry="docker-registry.example.com:5000"
+# docker_registry_username = ""
+# docker_registry_password = ""
+
 # docker_hub_username="YourDockerHubUsername"
+
+[prototype]
+# prototype_host = ""

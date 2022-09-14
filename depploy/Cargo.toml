@@ -1,0 +1,29 @@
+[package]
+name = "depploy"
+version = "0.2.3"
+edition = "2018"
+description = "Depploy is a cli tool that makes it easy to create docker images, for every programming language."
+authors = ["michael.lichtenecker@gmail.com"]
+homepage = "https://github.com/MichaelProjects/depploy"
+license = "Apache-2.0"
+keywords = ["cli", "container", "docker"]
+categories = ["command-line-utilities"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+structopt = "0.3.25"
+shiplift = "0.7"
+toml = "0.5.8"
+serde = "1.0"
+reqwest = { version = "0.11", features = ["json"] }
+serde_json = "1.0.64"
+tokio = { version = "1", features = ["full"] }
+log = "0.4"
+env_logger = "0.9.0"
+simple_logger = "2.1.0"
+text_io = "0.1.10"
+git2 = "0.14"
+whoami = "1.2.1"
+base64 = "0.13.0"
+depploy-logic = { version = "0.1.0", path = "../depploy-logic"}
