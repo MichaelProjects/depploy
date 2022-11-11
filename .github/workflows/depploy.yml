@@ -22,7 +22,7 @@ jobs:
         with: 
           sharedKey: key
       - name: build depploy
-        run: cargo build --release
+        run: cargo build --release --bin depploy
 
   testing:
     needs: build
@@ -56,13 +56,7 @@ jobs:
       - uses: Swatinem/rust-cache@v1
         with: 
             sharedKey: key
-      #- name: install dependencies
-      #  run: cargo install cargo-deb && cargo install cargo-aur
       - uses: katyo/publish-crates@v1
         with:
             registry-token: ${{ secrets.CARGO_SECRET }}
-            path: target/release/depploy
-    # compile to linux packages and create github release
-      #- name: build linux packages
-      #  run: cargo deb && cargo aur
-
+            path: ./depploy
