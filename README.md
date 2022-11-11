@@ -55,6 +55,9 @@ these are the features that should be added in the near future.
 
 ## Changelog
 
+## 0.3.1
+- Fixed issues and created release
+
 ## 0.3.0
 - Improved error handling in image build process.
 - Added prototype service (backend service comming soon..)
