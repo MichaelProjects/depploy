@@ -18,10 +18,11 @@ impl CreatePrototype {
 }
 
 
-pub async fn send_creation_prototype(pt: &CreatePrototype, project_path: &String, host: &String) -> Result<String, Box<dyn Error>> {
+pub async fn send_creation_prototype(pt: &CreatePrototype, project_path: &String, host: &String, token: &String) -> Result<String, Box<dyn Error>> {
     let uri = format!("{}/api/v1/config/prototype", host);
     let client = reqwest::Client::new();
     let res= client.post(uri)
+    .header("Authentication", token)
     .body(serde_json::to_string(&pt)?).send().await?.text().await?;
     let data: ServerResponse = serde_json::from_str(res.as_str())?;
     return Ok(data.data)

@@ -42,7 +42,7 @@ pub async fn build_image(image_tag: &String, dir: &str, dockerfile_name: &String
         x.pop();
         project_path = x.to_str().unwrap().to_string();
     }
-    
+    println!("{:?}", project_path);
     let dockerfile_name_path = format!("{}/{}", project_path, dockerfile_name);
     let mut args = vec!["build", "-f", dockerfile_name_path.as_str(), "-t", image_tag, "-t", latest_img_tag, project_path.as_str()];
     if no_latest == &true {

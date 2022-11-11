@@ -87,10 +87,12 @@ pub fn get_info(config_data: String) -> ProjectConf {
 }
 
 pub fn build_dir(dir: &Path) -> String {
+    println!("Put in Path: {:?}", dir);
     let dir_str = dir.to_str().expect("Path");
     if dir_str.ne(".") {
         let a = format!("{}",dir_str );
         return a
     }
-    ".".to_string()
+    let x = std::env::current_dir().unwrap();
+    x.to_str().unwrap().to_string()
 }

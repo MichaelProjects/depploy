@@ -1,18 +1,28 @@
+use std::borrow::Borrow;
 use std::fs;
 use std::str::FromStr;
 use std::{error::Error, path::PathBuf};
+
+use reqwest::StatusCode;
 
 use crate::common::error::PTGenError;
 use crate::common::models::{Cfg, PrototypeConfig};
 use crate::io::match_config;
 
 
-pub async fn upload_config(cfg: Cfg, host: &String) -> Result<(), Box<dyn Error>> {
+pub async fn upload_config(cfg: Cfg, host: &String, token: String) -> Result<(), Box<dyn Error>> {
     let uri = format!("{}/api/v1/config/upload", host);
     let client = reqwest::Client::new();
     let res = client.post(uri)
-    .body(serde_json::to_string(&cfg)?).send().await?.text().await?;
-    println!("{}", res);
+    .header("Authentication", token)
+    .body(serde_json::to_string(&cfg)?).send().await?;
+    if res.status() != StatusCode::OK{
+        println!("Could not upload the config");
+        return Ok(())
+    }
+    let body = res.text().await?;
+    let host_uri = format!("{}/api/v1/pt-service/{}", host, body);
+    println!("app-exposed on: \n{:?}", host_uri);
     return Ok(());
 }
 
@@ -27,7 +37,6 @@ pub fn read_project_file(project_path: &String) -> Result<Cfg, Box<dyn Error>> {
     let data = load_project_conf(&path)?;
 
     let cfg = Cfg::new(fname, file_type, project_cache.app_id, data);
-    println!("{:?}", cfg);
     Ok(cfg)
 }
 

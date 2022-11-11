@@ -3,11 +3,12 @@ use std::env;
 
 
 use depploy_logic::build::{create_tag, set_latest_tag, build_image, push_image};
-use depploy_logic::commands::Command;
+use depploy_logic::commands::{Command, Prototype};
 use depploy_logic::conf::read_depploy_conf;
 use depploy_logic::generate::files::{get_predefined_dockerfiles, load_predefined_languages};
 use depploy_logic::generate::lang::{get_project_language, create_project_analysis};
 use depploy_logic::io::{build_dir, match_config, load_project_file, ProjectConf, get_info};
+use depploy_logic::prototype::logic::prototype_logic;
 use log::{error, info, warn, LevelFilter};
 use simple_logger::SimpleLogger;
 use std::fs::{self};
@@ -127,6 +128,7 @@ async fn main() {
             println!("needs to be implemented");
         },*/
         Command::Prototype { command } => {
+            prototype_logic(command).await;
          }
         Command::Generate {
             dir,
