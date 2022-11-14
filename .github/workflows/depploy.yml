@@ -65,7 +65,7 @@ jobs:
             zip target/release/depploy target/release/depploy.linux-amd64.tar.gz
           else
             zip target/release/depploy target/release/depploy.darwin-amd64.tar.gz
-          if
+          fi
 
   deploy:
     needs: build
