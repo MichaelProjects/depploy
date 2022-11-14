@@ -22,3 +22,7 @@ env_logger = "0.9.0"
 simple_logger = "2.1.0"
 whoami = "1.2.1"
 depploy-logic = { version = "0.1.0", path = "../depploy-logic"}
+
+[build-dependencies]
+vcpkg = "0.2.15"
+pkg-config = "0.3.16"

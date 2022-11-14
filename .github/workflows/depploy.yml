@@ -37,6 +37,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
+      - name:  Install
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            git clone https://github.com/Microsoft/vcpkg.git
+            ./vcpkg/bootstrap-vcpkg.sh
+            vcpkg install openssl
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
