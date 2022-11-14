@@ -59,6 +59,13 @@ jobs:
           sharedKey: ${{ matrix.os }}
       - name: build depploy
         run: cargo build --release --bin depploy
+      - name: zip
+        run: |
+          if [ $RUNNER_OS == "ubuntu" ]; then
+            zip target/release/depploy target/release/depploy.linux-amd64.tar.gz
+          else
+            zip target/release/depploy target/release/depploy.darwin-amd64.tar.gz
+          if
 
   deploy:
     needs: build
