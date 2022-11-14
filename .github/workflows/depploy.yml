@@ -62,9 +62,9 @@ jobs:
       - name: zip
         run: |
           if [ $RUNNER_OS == "ubuntu" ]; then
-            zip target/release/depploy target/release/depploy.linux-amd64.tar.gz
+            tar -zcvf target/release/depploy.linux-amd64.tar.gz target/release/depploy
           else
-            zip target/release/depploy target/release/depploy.darwin-amd64.tar.gz
+            tar -zcvf target/release/depploy.darwin-amd64.tar.gz target/release/depploy
           fi
 
   deploy:
