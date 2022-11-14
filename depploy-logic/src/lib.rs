@@ -6,3 +6,4 @@ pub mod io;
 pub mod models;
 pub mod prototype;
 pub mod common;
+pub mod self_cmd;

@@ -34,7 +34,7 @@ fn build_depploy_path() -> String {
     match env::consts::OS {
         "macos" => return format!("/Users/{}/.depploy", username),
         "linux" => return format!("/home/{}/.depploy", username),
-        "windows" => return format!("/home/{}/.depploy", username),
+        "windows" => return format!("C:/Users/{}/.depploy", username),
         other => return String::new(),
     }
 }
