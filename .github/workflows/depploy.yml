@@ -43,6 +43,9 @@ jobs:
             git clone https://github.com/Microsoft/vcpkg.git
             ./vcpkg/bootstrap-vcpkg.sh
             vcpkg install openssl
+            echo "$RUNNER_OS not supported"
+            exit 1
+          fi
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
