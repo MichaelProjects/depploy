@@ -71,7 +71,7 @@ jobs:
 
   deploy:
     needs: build
-    if: github.ref == 'refs/tag/v*'
+    if: github.ref == 'v*'
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
