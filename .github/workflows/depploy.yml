@@ -125,7 +125,7 @@ jobs:
         matrix:
           os: [macos-latest]
     runs-on: ${{ matrix.os }}
-    needs: create-release
+    needs: create_release
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
