@@ -49,13 +49,13 @@ jobs:
           sharedKey: ${{ matrix.os }}
       - uses: actions/cache@v3
         with:
-          path: archive
+          path: archive-${{ matrix.os }}
           key: ${{ matrix.os }}-build
       - name: build depploy
         run: cargo build --release --bin depploy
       - name: zip
         run: |
-          mkdir archive
+          mkdir archive-$RUNNER_OS
           if [ $RUNNER_OS == "ubuntu" ]; then
             tar -zcvf archive/depploy.linux-amd64.tar.gz target/release/depploy
           else
@@ -94,14 +94,13 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/cache@v3
         with:
-          path: archive
           key: ${{ matrix.os }}-build
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: archive/depploy.linux-amd64.tar.gz
+          asset_path: archive-${{ matrix.os }}/depploy.linux-amd64.tar.gz
           asset_name: depploy.linux-amd64.tar.gz
           asset_content_type: application/gzip
 
@@ -115,14 +114,13 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/cache@v3
         with:
-          path: archive
           key: ${{ matrix.os }}-build
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: archive/depploy.darwin-amd64.tar.gz
+          asset_path: archive-${{ matrix.os }}/depploy.darwin-amd64.tar.gz
           asset_name: depploy.darwin-amd64.tar.gz
           asset_content_type: application/gzip
       # - name: upload windows artifact
