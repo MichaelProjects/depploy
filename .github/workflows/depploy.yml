@@ -72,19 +72,8 @@ jobs:
   create-release:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - uses: Swatinem/rust-cache@v1
-        with: 
-            sharedKey: ${{ matrix.os }}
 
       - name: version
         run: echo "::set-output name=version::$(./target/release/depploy --version)"
@@ -109,6 +98,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: create-release
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: Swatinem/rust-cache@v1
+        with: 
+            sharedKey: ${{ matrix.os }}
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -125,6 +122,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: create-release
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: Swatinem/rust-cache@v1
+        with: 
+            sharedKey: ${{ matrix.os }}
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
