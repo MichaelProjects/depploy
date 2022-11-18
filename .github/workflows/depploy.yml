@@ -8,8 +8,6 @@ on:
   pull_request:
     branches: [ master, dev ]
 
-env:
-  upload_url: x
 
 jobs:
   testing:
@@ -26,7 +24,7 @@ jobs:
           override: true
       - uses: Swatinem/rust-cache@v1
         with: 
-            sharedKey: key
+            sharedKey: ${{ matrix.os }}
       - name: run tests
         run: cargo test --release
 
@@ -41,18 +39,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      # - name:  Install
-      #   run: |
-      #     if($RUNNER_OS -eq "windows") {
-      #         git clone https://github.com/Microsoft/vcpkg.git
-      #         ./vcpkg/bootstrap-vcpkg.sh
-      #         vcpkg install openssl
-      #     }
-      #     else{
-      #         echo "$RUNNER_OS not supported"
-      #         exit 1
-      #     }
-      #   shell: powershell
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -61,17 +47,20 @@ jobs:
       - uses: Swatinem/rust-cache@v1
         with: 
           sharedKey: ${{ matrix.os }}
+      - uses: actions/cache@v3
+        with:
+          path: archive
+          key: ${{ matrix.os }}-build
       - name: build depploy
         run: cargo build --release --bin depploy
       - name: zip
         run: |
           if [ $RUNNER_OS == "ubuntu" ]; then
-            tar -zcvf target/release/depploy.linux-amd64.tar.gz target/release/depploy
+            mkdir archive
+            tar -zcvf archive/depploy.linux-amd64.tar.gz target/release/depploy
           else
-            tar -zcvf target/release/depploy.darwin-amd64.tar.gz target/release/depploy
+            tar -zcvf archive/depploy.darwin-amd64.tar.gz target/release/depploy
           fi
-          test -f target/release/depploy.linux-amd64.tar.gz && echo "$FILE exists."
-          test -f target/release/depploy.darwin-amd64.tar.gz && echo "$FILE exists."
 
   create_release:
     needs: build
@@ -94,7 +83,6 @@ jobs:
           body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
 
   upload-linux:
     strategy:
@@ -104,19 +92,16 @@ jobs:
     needs: create_release
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/cache@v3
         with:
-          toolchain: stable
-          override: true
-      - uses: Swatinem/rust-cache@v1
-        with: 
-            sharedKey: ${{ matrix.os }}
+          path: archive
+          key: ${{ matrix.os }}-build
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ env.upload_url }}
-          asset_path: target/release/depploy.linux-amd64.tar.gz
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: archive/depploy.linux-amd64.tar.gz
           asset_name: depploy.linux-amd64.tar.gz
           asset_content_type: application/gzip
 
@@ -128,19 +113,16 @@ jobs:
     needs: create_release
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/cache@v3
         with:
-          toolchain: stable
-          override: true
-      - uses: Swatinem/rust-cache@v1
-        with: 
-            sharedKey: ${{ matrix.os }}
+          path: archive
+          key: ${{ matrix.os }}-build
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ env.upload_url }}
-          asset_path: target/release/depploy.darwin-amd64.tar.gz
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: archive/depploy.darwin-amd64.tar.gz
           asset_name: depploy.darwin-amd64.tar.gz
           asset_content_type: application/gzip
       # - name: upload windows artifact
