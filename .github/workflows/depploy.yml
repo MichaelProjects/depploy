@@ -55,8 +55,8 @@ jobs:
         run: cargo build --release --bin depploy
       - name: zip
         run: |
+          mkdir archive
           if [ $RUNNER_OS == "ubuntu" ]; then
-            mkdir archive
             tar -zcvf archive/depploy.linux-amd64.tar.gz target/release/depploy
           else
             tar -zcvf archive/depploy.darwin-amd64.tar.gz target/release/depploy
