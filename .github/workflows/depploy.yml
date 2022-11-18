@@ -8,6 +8,8 @@ on:
   pull_request:
     branches: [ master, dev ]
 
+env:
+  upload_url: x
 
 jobs:
   testing:
@@ -90,6 +92,7 @@ jobs:
           body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
 
   upload-linux:
     strategy:
@@ -110,7 +113,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ env.upload_url }}
           asset_path: target/release/depploy.linux-amd64.tar.gz
           asset_name: depploy.linux-amd64.tar.gz
           asset_content_type: application/gzip
@@ -134,7 +137,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ env.upload_url }}
           asset_path: target/release/depploy.darwin-amd64.tar.gz
           asset_name: depploy.darwin-amd64.tar.gz
           asset_content_type: application/gzip
