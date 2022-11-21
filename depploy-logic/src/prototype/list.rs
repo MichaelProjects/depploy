@@ -9,7 +9,7 @@ use crate::common::models::{Cfg, ServerResponse, DeployedPrototype};
 pub async fn list_running_services(host: &String, token: String) -> Result<(), Box<dyn Error>> {
     let uri = format!("{}/api/v1/config/list", host);
     let client = reqwest::Client::new();
-    let res = client.post(uri)
+    let res = client.get(uri)
     .header("Authentication", token)
     .send().await?;
     if res.status() != StatusCode::OK{

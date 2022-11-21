@@ -33,7 +33,7 @@ pub async fn prototype_logic(cmd: &Prototype) {
             let cfg = read_depploy_conf(&PathBuf::from_str(build_depploy_path().as_str()).unwrap()).await.unwrap();
             let x = dir.as_os_str().to_string_lossy().to_string();
             let pcfg = read_project_file(&x).unwrap();
-            upload_config(pcfg,&cfg.prototype.clone().unwrap().prototype_host, cfg.prototype.unwrap().prototype_app_token).await.expect("An error occured while uploading the config");
+            upload_config(pcfg, &cfg.prototype.clone().unwrap().prototype_host, cfg.prototype.unwrap().prototype_app_token).await.expect("An error occured while uploading the config");
         }
         Prototype::List => {
             let cfg = read_depploy_conf(&PathBuf::from_str(build_depploy_path().as_str()).unwrap()).await.unwrap();
