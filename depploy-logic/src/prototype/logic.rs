@@ -37,6 +37,9 @@ pub async fn prototype_logic(cmd: &Prototype) {
         }
         Prototype::List => {
             let cfg = read_depploy_conf(&PathBuf::from_str(build_depploy_path().as_str()).unwrap()).await.unwrap();
+            if cfg.prototype.is_none(){
+                println!("The prototype option in the ~/.depploy needs to be configured");
+            }
             list_running_services(&cfg.prototype.clone().unwrap().prototype_host, cfg.prototype.unwrap().prototype_app_token).await.unwrap();
         }
     }

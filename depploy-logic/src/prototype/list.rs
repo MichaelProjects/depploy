@@ -13,7 +13,7 @@ pub async fn list_running_services(host: &String, token: String) -> Result<(), B
     .header("Authentication", token)
     .send().await?;
     if res.status() != StatusCode::OK{
-        println!("Could not upload the config");
+        println!("Cloud not get running services");
     }
     let raw_data: ServerResponse = res.json().await?;
     
