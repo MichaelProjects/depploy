@@ -34,10 +34,13 @@ pub enum Command {
         #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
         debug: bool
     },
+    #[structopt(about = "Upload and manage your prototype on a server")]
     Prototype{
         #[structopt(subcommand)]
         command: Prototype
-    }
+    },
+    #[structopt(about = "Update the depploy-cli tool")]
+    Update
 }
 
 #[derive(StructOpt, PartialEq, Debug)]
@@ -56,5 +59,7 @@ pub enum Prototype {
         dir: PathBuf,
         #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
         debug: bool
-    }
+    },
+    #[structopt(about = "Get a list of the running services on your prototyping server")]
+    List
 }

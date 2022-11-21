@@ -172,5 +172,8 @@ async fn main() {
                 }
             }
         }
+        Command::Update => {
+            println!("Needs to be implemented");
+        }
     }
 }

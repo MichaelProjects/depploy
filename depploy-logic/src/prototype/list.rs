@@ -1,17 +1,17 @@
 use std::error::Error;
 
 use cli_table::{format::Justify, print_stdout, Table, WithTitle};
-use reqwest::StatusCode;
+use reqwest::{StatusCode, Body};
 
 use crate::common::models::{Cfg, ServerResponse, DeployedPrototype};
 
 
-pub async fn list_running_services(cfg: Cfg, host: &String, token: String) -> Result<(), Box<dyn Error>> {
+pub async fn list_running_services(host: &String, token: String) -> Result<(), Box<dyn Error>> {
     let uri = format!("{}/api/v1/config/list", host);
     let client = reqwest::Client::new();
     let res = client.post(uri)
     .header("Authentication", token)
-    .body(serde_json::to_string(&cfg)?).send().await?;
+    .send().await?;
     if res.status() != StatusCode::OK{
         println!("Could not upload the config");
     }
