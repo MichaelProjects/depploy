@@ -80,7 +80,7 @@ jobs:
         with:
           draft: false
           prerelease: false
-          release_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ github.ref }}
           tag_name: ${{ github.ref }}
           body_path: CHANGELOG.md
         env:
@@ -102,7 +102,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: archive-${{ matrix.os }}/depploy.linux-amd64.tar.gz
           asset_name: depploy.linux-amd64.tar.gz
           asset_content_type: application/gzip
@@ -123,7 +123,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: archive-${{ matrix.os }}/depploy.darwin-amd64.tar.gz
           asset_name: depploy.darwin-amd64.tar.gz
           asset_content_type: application/gzip
