@@ -49,8 +49,8 @@ jobs:
           sharedKey: ${{ matrix.os }}
       - uses: actions/cache@v3
         with:
-          path: archive-${{ matrix.os }}
-          key: build
+          path: archive
+          key: build_cache
       - name: build depploy
         run: cargo build --release --bin depploy
       - name: zip
@@ -75,7 +75,7 @@ jobs:
         id: version
       - uses: actions/cache@v3
         with:
-          key: build
+          key: build_cache
           path: archive
         
       - uses: "marvinpinto/action-automatic-releases@latest"
