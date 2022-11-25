@@ -4,7 +4,7 @@ use reqwest::{Method, StatusCode, Url};
 
 use crate::models::gh_release::GHRelease;
 
-pub async fn is_new_version_available() -> Result<bool, Box<dyn Error>> {
+pub async fn is_new_version_available() -> Result<Option<String>, Box<dyn Error>> {
     let uri = "https://api.github.com/repos/MichaelProjects/depploy/releases";
     let res = reqwest::get(uri).await?;
     if res.status() == StatusCode::OK {
@@ -12,15 +12,22 @@ pub async fn is_new_version_available() -> Result<bool, Box<dyn Error>> {
         const VERSION: &str = env!("CARGO_PKG_VERSION");
         let os = determine_os();
         if os.is_some() {
+            let os = os.unwrap();
             for x in data {
                 let mut vers = x.tag_name.split("").collect::<Vec<&str>>();
                 vers.remove(0);
                 let full = vers.join("");
-                if full.parse::<u128>()? > VERSION.parse::<u128>()? {}
+                if full.parse::<u128>()? > VERSION.parse::<u128>()? {
+                    for asset in x.assets {
+                        if asset.browser_download_url.contains(&os){
+                            return Ok(Some(asset.browser_download_url))
+                        }
+                    }
+                }
             }
         }
     }
-    return Ok(false);
+    return Ok(None);
 }
 
 fn determine_os() -> Option<String> {
@@ -32,4 +39,10 @@ fn determine_os() -> Option<String> {
         return Some("linux-gnu".to_string());
     }
     return None;
+}
+
+
+#[tokio::test]
+async fn test_check_for_new_version(){
+    
 }

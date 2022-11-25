@@ -57,10 +57,10 @@ jobs:
         run: |
           echo $RUNNER_OS
           if [ $RUNNER_OS = "Linux" ]; then
-            mkdir archive-ubuntu-latest
+            mkdir -p archive-ubuntu-latest
             tar -zcvf archive-ubuntu-latest/depploy.linux-amd64.tar.gz target/release/depploy
           else
-            mkdir archive-macos-latest
+            mkdir -p archive-macos-latest
             tar -zcvf archive-macos-latest/depploy.darwin-amd64.tar.gz target/release/depploy
           fi
 
