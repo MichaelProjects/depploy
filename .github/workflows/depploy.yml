@@ -50,18 +50,18 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: archive-${{ matrix.os }}
-          key: ${{ matrix.os }}-build
+          key: build
       - name: build depploy
         run: cargo build --release --bin depploy
       - name: zip
         run: |
           echo $RUNNER_OS
+          mkdir -p archive
           if [ $RUNNER_OS = "Linux" ]; then
-            mkdir -p archive-ubuntu-latest
-            tar -zcvf archive-ubuntu-latest/depploy.linux-amd64.tar.gz target/release/depploy
+            
+            tar -zcvf archive/depploy.linux-amd64.tar.gz target/release/depploy
           else
-            mkdir -p archive-macos-latest
-            tar -zcvf archive-macos-latest/depploy.darwin-amd64.tar.gz target/release/depploy
+            tar -zcvf archive/depploy.darwin-amd64.tar.gz target/release/depploy
           fi
 
   release:
@@ -73,51 +73,15 @@ jobs:
       - name: version
         run: echo "::set-output name=version::$(./target/release/depploy --version)"
         id: version
+      - uses: actions/cache@v3
+        with:
+          key: build
+          path: archive
         
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-
-  upload-linux:
-    strategy:
-        matrix:
-          os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-    needs: release
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v3
-        with:
-          key: ${{ matrix.os }}-build
-          path: archive-${{ matrix.os }}
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: archive-${{ matrix.os }}/depploy.linux-amd64.tar.gz
-          asset_name: depploy.linux-amd64.tar.gz
-          asset_content_type: application/gzip
-
-  upload-macos:
-    strategy:
-        matrix:
-          os: [macos-latest]
-    runs-on: ${{ matrix.os }}
-    needs: release
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v3
-        with:
-          key: ${{ matrix.os }}-build
-          path: archive-${{ matrix.os }}
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: archive-${{ matrix.os }}/depploy.darwin-amd64.tar.gz
-          asset_name: depploy.darwin-amd64.tar.gz
-          asset_content_type: application/gzip
-          
+          files: |
+            archive/depploy.darwin-amd64.tar.gz
+            archive/depploy.linux-amd64.tar.gz
