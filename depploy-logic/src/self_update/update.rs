@@ -44,5 +44,7 @@ fn determine_os() -> Option<String> {
 
 #[tokio::test]
 async fn test_check_for_new_version(){
-    
+    let res = is_new_version_available().await.unwrap();
+    println!("RES: {:?}", res);
+    assert!(false)
 }
