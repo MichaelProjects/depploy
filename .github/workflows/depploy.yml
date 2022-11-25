@@ -112,7 +112,7 @@ jobs:
         matrix:
           os: [macos-latest]
     runs-on: ${{ matrix.os }}
-    needs: create_release
+    needs: release
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v3
