@@ -88,10 +88,10 @@ fn user_path() -> String {
     }
 }
 
-#[tokio::test]
-async fn test_check_for_new_version(){
-    env::set_var("OSTYPE", "linux-gnu");
-    let res = is_new_version_available().await.unwrap();
-    println!("RES: {:?}", res);
-    download_bin(res.unwrap()).await.unwrap();
-}
+// #[tokio::test]
+// async fn test_check_for_new_version(){
+//     env::set_var("OSTYPE", "linux-gnu");
+//     let res = is_new_version_available().await.unwrap();
+//     println!("RES: {:?}", res);
+//     download_bin(res.unwrap()).await.unwrap();
+// }
