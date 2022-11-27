@@ -1,4 +1,4 @@
-use std::{error::Error, str::FromStr, time::Duration, fs::File, io::copy};
+use std::{error::Error, str::FromStr, time::Duration, fs::File, io::copy, env};
 
 use flate2::bufread::GzDecoder;
 use reqwest::{Method, StatusCode, Url, Client, Request, header::HeaderValue};
@@ -21,9 +21,14 @@ pub async fn is_new_version_available() -> Result<Option<String>, Box<dyn Error>
         if os.is_some() {
             let os = os.unwrap();
             for x in data {
-                let mut vers = x.tag_name.split("").collect::<Vec<&str>>();
-                vers.remove(0);
+                let mut vers = &x.tag_name.split("").collect::<Vec<&str>>();
+                println!("{:?}", vers);
+                vers.into_iter().filter(|x| match x.parse::<u128>(){
+                    Ok(x) => true,
+                    Err(x) => false
+                });
                 let full = vers.join("");
+                println!("{:?}", vers);
                 if full.parse::<u128>()? > VERSION.parse::<u128>()? {
                     for asset in x.assets {
                         if asset.browser_download_url.contains(&os){
@@ -38,7 +43,7 @@ pub async fn is_new_version_available() -> Result<Option<String>, Box<dyn Error>
 }
 
 fn determine_os() -> Option<String> {
-    let os = std::env::var("OSTYPE").unwrap();
+    let os = std::env::var("OSTYPE").expect("OSTYPE is not set");
     if os.contains("darwin") {
         return Some("darwin".to_string());
     }
@@ -75,6 +80,7 @@ async fn download_bin(asset: String) -> Result<(), Box<dyn Error>> {
 
 #[tokio::test]
 async fn test_check_for_new_version(){
+    env::set_var("OSTYPE", "linux-gnu");
     let res = is_new_version_available().await.unwrap();
     println!("RES: {:?}", res);
     download_bin(res.unwrap()).await;
