@@ -1,3 +1,8 @@
+#!/bin/sh
+
 cargo build --release
-rm /usr/local/bin/depploy
-cp target/release/depploy /usr/local/bin/
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    cp target/release/depploy /usr/local/bin/depploy
+else
+    cp target/release/depploy /usr/local/bin/depploy
+fi

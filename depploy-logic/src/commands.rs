@@ -15,6 +15,8 @@ pub enum Command {
         public_repo: bool,
         #[structopt(short = "nl", long = "no-latest", help="Should not build and push the latest tag to the registry")]
         no_latest: bool,
+        #[structopt(default_value = ".", short = "c", long = "config", help = "if you are working with workspaces and the config is in a sub directory")]
+        config_file: String,
         #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
         debug: bool
     },

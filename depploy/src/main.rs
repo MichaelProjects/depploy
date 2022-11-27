@@ -1,15 +1,16 @@
 
 use std::env;
+use std::error::Error;
 
 
 use depploy_logic::build::{create_tag, set_latest_tag, build_image, push_image};
-use depploy_logic::commands::{Command, Prototype};
+use depploy_logic::commands::{Command};
 use depploy_logic::conf::read_depploy_conf;
 use depploy_logic::generate::files::{get_predefined_dockerfiles, load_predefined_languages};
 use depploy_logic::generate::lang::{get_project_language, create_project_analysis};
-use depploy_logic::io::{build_dir, match_config, load_project_file, ProjectConf, get_info};
+use depploy_logic::io::{build_dir, match_config, load_project_file, get_info};
 use depploy_logic::prototype::logic::prototype_logic;
-use log::{error, info, warn, LevelFilter};
+use log::{error, info, warn, LevelFilter, debug};
 use simple_logger::SimpleLogger;
 use std::fs::{self};
 use std::path::{PathBuf};
@@ -69,6 +70,7 @@ async fn main() {
             debug,
             public_repo,
             dockerfile_name,
+            config_file,
             no_latest,
         } => {
             if debug == &true {
@@ -99,13 +101,26 @@ async fn main() {
             }
 
             // load the project config file
-            
-            
-            let filename = match_config(&dir);
-            let config_data = match load_project_file(&dir, &filename) {
+            let mut filename = match_config(&dir);
+            let mut config_data = match load_project_file(&dir, &filename) {
                 Ok(data) => data,
                 Err(err) => panic!("Error: {}", err),
             };
+
+            // If there is a workspace and the config is in a sub-directory, it will override the default behavior.
+            if config_file != "."{
+                // Will clone and modify the path and override the read config data
+                let abc = dir.clone().join(config_file);
+                debug!("Specified config file: {:?}", abc);
+                filename = match_config(&abc);
+                config_data = match load_project_file(&abc, &filename) {
+                    Ok(data) => data,
+                    Err(err) => panic!("Error: {}", err),
+                };
+            }
+
+            
+            debug!("Config file: {:?}", config_data);
             let data = get_info(config_data);
 
             // uses docker
