@@ -10,6 +10,7 @@ use depploy_logic::generate::files::{get_predefined_dockerfiles, load_predefined
 use depploy_logic::generate::lang::{get_project_language, create_project_analysis};
 use depploy_logic::io::{build_dir, match_config, load_project_file, get_info};
 use depploy_logic::prototype::logic::prototype_logic;
+use depploy_logic::self_update::update::{is_new_version_available, download_bin};
 use log::{error, info, warn, LevelFilter, debug};
 use simple_logger::SimpleLogger;
 use std::fs::{self};
@@ -188,7 +189,8 @@ async fn main() {
             }
         }
         Command::Update => {
-            println!("Needs to be implemented");
+            let res = is_new_version_available().await.unwrap();
+            download_bin(res.unwrap()).await.unwrap();
         }
     }
 }
