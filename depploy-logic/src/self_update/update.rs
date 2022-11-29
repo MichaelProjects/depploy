@@ -1,11 +1,10 @@
-use std::{error::Error, str::FromStr, time::Duration, fs::{File, OpenOptions}, io::{copy, Read}, env, fmt::format};
+use std::{error::Error, str::FromStr, fs::{File, OpenOptions}, io::{copy, Read}, env, fmt::format};
 
-use flate2::bufread::GzDecoder;
-use reqwest::{Method, StatusCode, Url, Client, Request, header::HeaderValue};
+use reqwest::{Method, StatusCode, Url, Client, Request};
 use tar::Archive;
 use tempfile::tempdir;
-use std::io::{self, Write};
-use crate::models::gh_release::{GHRelease, Asset};
+use std::io::{Write};
+use crate::models::gh_release::{GHRelease};
 
 pub async fn is_new_version_available() -> Result<Option<String>, Box<dyn Error>> {
     let client = Client::new();
@@ -61,14 +60,22 @@ fn determine_os() -> Option<String> {
 
 pub async fn download_bin(asset: String) -> Result<(), Box<dyn Error>> {
     // download the artifact from github release
-    let response = reqwest::get(asset).await?;
-    let content = response.text().await?;
+    let mut response = reqwest::get(asset).await?;
+    assert!(response.status() == 200);
+    let content = response.bytes().await?;
 
+    let mut data = Vec::new();
+
+
+    for x in content.into_iter(){
+        data.push(x);
+    }
     let fname = "depploy.tar.gz";
 
     let dir = tempdir()?;
     let file_path = dir.path().join(fname);
     let mut file = File::create(&file_path)?;
+
     println!("TMP FILE {:?}", file_path.metadata());
 
     let mut tmp_writer = OpenOptions::new()
@@ -77,7 +84,7 @@ pub async fn download_bin(asset: String) -> Result<(), Box<dyn Error>> {
         .open(&file_path)
         .expect("Unable to open file");
 
-    tmp_writer.write_all(&mut content.as_bytes())?;
+    tmp_writer.write_all(&data)?;
     let mut buffer = String::new();
 
     // untar content
@@ -112,10 +119,10 @@ fn user_path() -> String {
     }
 }
 
-#[tokio::test]
-async fn test_check_for_new_version(){
-    env::set_var("OSTYPE", "linux-gnu");
-    let res = is_new_version_available().await.unwrap();
-    println!("RES: {:?}", res);
-    download_bin(res.unwrap()).await.unwrap();
-}
+// #[tokio::test]
+// async fn test_check_for_new_version(){
+//     env::set_var("OSTYPE", "linux-gnu");
+//     let res = is_new_version_available().await.unwrap();
+//     println!("RES: {:?}", res);
+//     download_bin(res.unwrap()).await.unwrap();
+// }
