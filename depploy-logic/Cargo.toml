@@ -27,6 +27,8 @@ cli-table = "0.4.7"
 tar = "0.4"
 tempfile = "3.3.0"
 flate2 = "1.0.25"
+zip-extract = "0.1.1"
+zip = "0.6.3"
 
 [dev-dependencies]
 pact_consumer = "0.10.0"

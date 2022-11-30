@@ -5,9 +5,11 @@
 Depploy is a cli tool that makes it easy to create docker images, for every programming language.
 Simply specify the name and the version in your application config, and depploy will take care of build and pushing to the docker hub or your private registry.
 
+This cli is for Linux and MacOS only. Windows Useres please get a Linux machine and stop using windows, but depploy can be used in WSL2 by Microsoft.
+
 ## Installation
 ```bash
-cargo install depploy
+Download the archive with your needed architecture, or compile it yourself.
 ```
 
 ## Usage (command: Run)

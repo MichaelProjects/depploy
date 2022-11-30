@@ -1,4 +1,4 @@
-use std::{error::Error, str::FromStr, fs::{File, OpenOptions}, io::{copy, Read}, env, fmt::format};
+use std::{error::Error, str::FromStr, fs::{File, OpenOptions, self}, io::{copy, Read}, env, fmt::format, path::PathBuf, os::unix::prelude::OpenOptionsExt};
 
 use reqwest::{Method, StatusCode, Url, Client, Request};
 use tar::Archive;
@@ -60,51 +60,28 @@ fn determine_os() -> Option<String> {
 
 pub async fn download_bin(asset: String) -> Result<(), Box<dyn Error>> {
     // download the artifact from github release
-    let mut response = reqwest::get(asset).await?;
-    assert!(response.status() == 200);
-    let content = response.bytes().await?;
+    let mut res = reqwest::get(asset).await.unwrap();
+    assert!(res.status() == 200);
 
-    let mut data = Vec::new();
+    let mut buf: Vec<u8> = Vec::new();
+    buf = res.bytes().await.unwrap().to_vec();
+    println!("Lenght: {}", buf.len());
 
+    let c: &[u8] = &buf;
 
-    for x in content.into_iter(){
-        data.push(x);
-    }
-    let fname = "depploy.tar.gz";
-
-    let dir = tempdir()?;
-    let file_path = dir.path().join(fname);
-    let mut file = File::create(&file_path)?;
-
-    println!("TMP FILE {:?}", file_path.metadata());
-
-    let mut tmp_writer = OpenOptions::new()
+    let mut tmpfile = tempfile::tempfile().unwrap();
+    tmpfile.write_all(c)?;
+    let mut zip = zip::ZipArchive::new(tmpfile)?;
+    let mut buf: Vec<u8> = Vec::new();
+    zip.by_name("depploy").unwrap().read_to_end(&mut buf)?;
+    
+    let mut f = fs::OpenOptions::new()
+        .create(true)
         .write(true)
-        .truncate(true)
-        .open(&file_path)
-        .expect("Unable to open file");
-
-    tmp_writer.write_all(&data)?;
-    let mut buffer = String::new();
-
-    // untar content
-    let mut a = Archive::new(file);
-    for x in a.entries()? {
-        let mut datata = x?;
-        datata.read_to_string(&mut buffer)?;
-    }
-
-    // move extracted artifact in user bin dir
-    let location = user_path();
-    let mut write = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(&location)
-        .expect("Unable to open file");
-    write
-        .write_all(&mut buffer.as_bytes())
-        .expect("Unable to write data");
-
+        .mode(0o770)
+        .open("depploy")?;
+    let c: &[u8] = &buf;
+    f.write_all(c)?;
     Ok(())
 }
 
