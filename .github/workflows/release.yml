@@ -45,19 +45,6 @@ jobs:
         with:
           rust-version: stable
 
-      - name: install cross
-        run: cargo install cross      
-
-      - name: Install zip
-        uses: montudor/action-zip@v1
-
-      - name: compress linux
-        run: zip -qq -r x86_64-unknown-linux-gnu.zip depploy
-        working-directory: target/x86_64-unknown-linux-gnu/release
-      
-      - name: compress macos
-        run: zip -qq -r  x86_64-apple-darwin.zip depploy
-        working-directory: target/x86_64-apple-darwin/release
 
       - name: version
         run: echo "::set-output name=version::$(./target/release/depploy --version)"
