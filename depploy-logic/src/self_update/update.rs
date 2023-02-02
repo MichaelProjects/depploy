@@ -1,8 +1,6 @@
-use std::{error::Error, str::FromStr, fs::{File, OpenOptions, self}, io::{copy, Read}, env, fmt::format, path::PathBuf, os::unix::prelude::OpenOptionsExt};
+use std::{error::Error, str::FromStr, fs::{self}, io::{Read}, env, os::unix::prelude::OpenOptionsExt};
 
 use reqwest::{Method, StatusCode, Url, Client, Request};
-use tar::Archive;
-use tempfile::tempdir;
 use std::io::{Write};
 use crate::models::gh_release::{GHRelease};
 

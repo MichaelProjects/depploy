@@ -1,8 +1,6 @@
 use crate::{io::{ProjectConf, match_config, load_project_file}, common::error::PTGenError};
 use log::{debug, info, error};
-use shiplift::{builder::BuildOptionsBuilder, BuildOptions, Docker};
-use std::{process::Command, error::Error, path::PathBuf, str::FromStr, fs};
-use futures::StreamExt;
+use std::{process::Command, path::PathBuf, str::FromStr};
 
 
 pub fn create_tag(image_conf: &ProjectConf, mut docker_registry: String) -> Vec<String> {
