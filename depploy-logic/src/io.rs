@@ -54,7 +54,10 @@ fn find_conf(dir: &PathBuf, config_names: Vec<&str>) -> String{
         let str_path = path.to_str().unwrap();
         for config_name in config_names.iter() {
             if str_path.contains(config_name) {
-                return str_path.split("/").last().unwrap().to_string();
+                let file_name = str_path.split("/").last().unwrap().to_string();
+                if file_name.split(".").collect::<Vec<&str>>().len() == 2{
+                    return file_name;
+                }
             }
         }
     }
