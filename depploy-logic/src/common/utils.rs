@@ -3,7 +3,7 @@ use std::{path::PathBuf, error::Error, str::FromStr, fs};
 
 
 pub fn create_project_cache(project_path: &String) -> Result<(), Box<dyn Error>>{
-    let raw_path = format!("{}/.depploy", project_path);
+    let raw_path = format!("{project_path}/.depploy");
     let path = PathBuf::from_str(&raw_path)?;
     if path.exists() && path.is_dir() {
         return Ok(())
@@ -12,5 +12,5 @@ pub fn create_project_cache(project_path: &String) -> Result<(), Box<dyn Error>>
         fs::remove_file(&path)?;
     }
     fs::create_dir(&path)?;
-    return Ok(())
+    Ok(())
 }

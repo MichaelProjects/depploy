@@ -18,7 +18,9 @@ pub enum Command {
         #[structopt(default_value = ".", short = "c", long = "config", help = "if you are working with workspaces and the config is in a sub directory")]
         config_file: String,
         #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
-        debug: bool
+        debug: bool,
+        #[structopt(short = "p", long = "platform", default_value = "", help = "Select the platform, mainly for apple silicon => linux/amd64")]
+        platform: String
     },
     #[structopt(about = "Search for docker images in registry")]
     /*Search{

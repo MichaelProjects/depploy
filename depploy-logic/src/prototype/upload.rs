@@ -1,4 +1,4 @@
-use std::borrow::Borrow;
+
 use std::fs;
 use std::str::FromStr;
 use std::{error::Error, path::PathBuf};
@@ -7,11 +7,11 @@ use reqwest::StatusCode;
 
 use crate::common::error::PTGenError;
 use crate::common::models::{Cfg, PrototypeConfig};
-use crate::io::match_config;
+
 
 
 pub async fn upload_config(cfg: Cfg, host: &String, token: String) -> Result<(), Box<dyn Error>> {
-    let uri = format!("{}/api/v1/config/upload", host);
+    let uri = format!("{host}/api/v1/config/upload");
     let client = reqwest::Client::new();
     let res = client.post(uri)
     .header("Authentication", token)
@@ -21,15 +21,15 @@ pub async fn upload_config(cfg: Cfg, host: &String, token: String) -> Result<(),
         return Ok(())
     }
     let body = res.text().await?;
-    let host_uri = format!("{}/api/v1/pt-service/{}", host, body);
-    println!("app-exposed on: \n{:?}", host_uri);
-    return Ok(());
+    let host_uri = format!("{host}/api/v1/pt-service/{body}");
+    println!("app-exposed on: \n{host_uri:?}");
+    Ok(())
 }
 
 pub fn read_project_file(project_path: &String) -> Result<Cfg, Box<dyn Error>> {
     let project_cache = load_project_cache(project_path)?.unwrap();
     
-    let path = PathBuf::from_str(format!("{}/conf.toml", project_path).as_str())?;
+    let path = PathBuf::from_str(format!("{project_path}/conf.toml").as_str())?;
 
     let fname = path.file_name().unwrap().to_owned().to_string_lossy().to_string();
     let file_type = path.extension().unwrap().to_owned().to_string_lossy().to_string();

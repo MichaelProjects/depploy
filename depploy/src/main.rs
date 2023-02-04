@@ -73,6 +73,7 @@ async fn main() {
             dockerfile_name,
             config_file,
             no_latest,
+            platform
         } => {
             if debug == &true {
                 SimpleLogger::with_level(logger, LevelFilter::Debug)
@@ -131,7 +132,7 @@ async fn main() {
             
             let latest_tag = set_latest_tag(name);
 
-            build_image(&tag, build_dir.as_str(), dockerfile_name, &no_latest, &latest_tag).await;
+            build_image(&tag, build_dir.as_str(), dockerfile_name, &no_latest, &latest_tag, platform).await;
 
             push_image(&tag);
 

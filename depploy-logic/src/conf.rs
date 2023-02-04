@@ -1,7 +1,7 @@
-use serde::Deserialize;
-use std::{path::{Path, PathBuf},  io, fs::File};
-use toml;
-use log::{debug, error, info, trace, warn};
+
+use std::{path::{PathBuf},  io, fs::File};
+
+use log::{debug};
 use std::error::Error;
 
 use crate::models::depploy::DepployConfig;
@@ -11,7 +11,7 @@ pub async fn read_depploy_conf(depploy_dir: &PathBuf) -> Result<DepployConfig, B
     //! The depploy settings file reader, checks if the depploy settings file is present, if not it will fetch the 
     //! example config from the git repo.
     
-    let mut path = depploy_dir.clone();
+    let path = depploy_dir.clone();
     if !path.exists() {
         let url = "https://raw.githubusercontent.com/MichaelProjects/depploy/dev/example_settings.toml";
         debug!("Fetching depploy settings file from {}", url);
@@ -23,5 +23,5 @@ pub async fn read_depploy_conf(depploy_dir: &PathBuf) -> Result<DepployConfig, B
     }
     let settings_path = format!("{}/settings.toml", path.to_str().unwrap());
     let config_data = DepployConfig::new(settings_path)?;
-    return Ok(config_data)
+    Ok(config_data)
 }

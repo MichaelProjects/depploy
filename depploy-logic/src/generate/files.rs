@@ -1,8 +1,9 @@
-use std::{path::PathBuf, error::Error, str::FromStr, io::{self, Write}, process::Command};
+use std::{path::PathBuf, error::Error, io::{self, Write}};
+#[allow(clippy::wrong_self_convention)]use std::str::FromStr;
 
-use git2::{Repository, FetchOptions};
+use git2::{Repository};
 use std::fs;
-use log::{error, info, trace, warn, debug, LevelFilter};
+use log::{warn, debug};
 
 
 pub fn get_predefined_dockerfiles(depploy_dir: &PathBuf) -> Result<Vec<String>, Box<dyn Error>> {
@@ -18,7 +19,7 @@ pub fn get_predefined_dockerfiles(depploy_dir: &PathBuf) -> Result<Vec<String>, 
     let repo = Repository::open(&path)?;
     let mut remote = repo.find_remote(remote_name)?;
     let fetch_commit = do_fetch(&repo, &[remote_branch], &mut remote)?;
-    do_merge(&repo, &remote_branch, fetch_commit)?;
+    do_merge(&repo, remote_branch, fetch_commit)?;
 
     Ok(vec![String::new()])
 }
@@ -29,13 +30,11 @@ pub fn load_predefined_languages(depploy_dir: &PathBuf, language: &String, mut c
     let dir =  fs::read_dir(&path)?;
     for file in dir{
         let filename = String::from(file?.file_name().to_str().unwrap());
-        if !filename.starts_with("."){
-            if filename.starts_with(language){
-                path.push(filename);
-                current_dir.push("dockerfile");
-                fs::copy(path, current_dir)?;
-                return Ok(());
-            }
+        if !filename.starts_with('.') && filename.starts_with(language) {
+            path.push(filename);
+            current_dir.push("dockerfile");
+            fs::copy(path, current_dir)?;
+            return Ok(());
         }
     }
     warn!("No pre-defined dockerfile found, try the file extension eg. py, rs");
@@ -100,7 +99,7 @@ fn do_fetch<'a>(
     }
 
     let fetch_head = repo.find_reference("FETCH_HEAD")?;
-    Ok(repo.reference_to_annotated_commit(&fetch_head)?)
+    repo.reference_to_annotated_commit(&fetch_head)
 }
 
 fn fast_forward(
@@ -175,7 +174,7 @@ fn do_merge<'a>(
     if analysis.0.is_fast_forward() {
         debug!("Doing a fast forward");
         // do a fast forward
-        let refname = format!("refs/heads/{}", remote_branch);
+        let refname = format!("refs/heads/{remote_branch}");
         match repo.find_reference(&refname) {
             Ok(mut r) => {
                 fast_forward(repo, &mut r, &fetch_commit)?;
@@ -202,7 +201,7 @@ fn do_merge<'a>(
     } else if analysis.0.is_normal() {
         // do a normal merge
         let head_commit = repo.reference_to_annotated_commit(&repo.head()?)?;
-        normal_merge(&repo, &head_commit, &fetch_commit)?;
+        normal_merge(repo, &head_commit, &fetch_commit)?;
     } else {
         debug!("Nothing to do...");
     }

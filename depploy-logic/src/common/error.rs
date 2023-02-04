@@ -1,7 +1,7 @@
 use std::fmt;
 use std::error;
 
-type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
+//type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
 
 #[derive(Debug, Clone)]
 pub enum PTGenError { Exists, ServerError, ConfigNotFound, PresistingError, FailedBuilding, FailedPushing }

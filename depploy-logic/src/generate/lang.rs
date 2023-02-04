@@ -1,16 +1,15 @@
-use log::{debug, error, info, trace, warn};
+use log::{debug, error};
 use std::{
     collections::HashMap,
     error::Error,
     ffi::OsString,
     fs::{self, File},
     io,
-    path::{Path, PathBuf},
-    str::FromStr, ascii::AsciiExt,
+    path::{PathBuf},
 };
 
 use crate::models::language::Language;
-use git2::{Repository, build::CheckoutBuilder};
+
 
 fn get_filesnames(
     path: &PathBuf,
@@ -23,7 +22,7 @@ fn get_filesnames(
     if path.is_dir() {
         let str_path = path.to_str().unwrap();
         for x in exclude_dirs.iter() {
-            if str_path.split("/").last().unwrap().contains(x) {
+            if str_path.split('/').last().unwrap().contains(x) {
                 return Ok(None);
             }
         }
@@ -31,7 +30,7 @@ fn get_filesnames(
         for element in fs::read_dir(path)? {
             let y = element?;
             // calls it self here again
-            let mut result = get_filesnames(&y.path(), exclude_dirs)?;
+            let result = get_filesnames(&y.path(), exclude_dirs)?;
             if result.is_some() {
                 list.append(&mut result.unwrap());
             }
@@ -39,7 +38,7 @@ fn get_filesnames(
     } else {
         list.push(path.as_os_str().into())
     }
-    return Ok(Some(list));
+    Ok(Some(list))
 }
 
 fn analyzse_dir_struct(files: Vec<OsString>) -> Option<String> {
@@ -47,8 +46,8 @@ fn analyzse_dir_struct(files: Vec<OsString>) -> Option<String> {
     let mut map = HashMap::new();
     for file in files.iter() {
         let filename = file.to_str().unwrap();
-        if filename.contains(".") {
-            let y = filename.split(".").last().unwrap().to_string();
+        if filename.contains('.') {
+            let y = filename.split('.').last().unwrap().to_string();
             let count = map.entry(y).or_insert(0);
             *count += 1;
         }
@@ -58,7 +57,7 @@ fn analyzse_dir_struct(files: Vec<OsString>) -> Option<String> {
     if key_with_max_value.is_some() {
         return Some(key_with_max_value.unwrap().0.clone());
     }
-    return None;
+    None
 }
 
 pub async fn get_project_language(depploy_dir: &PathBuf) -> Result<Vec<Language>, Box<dyn Error>> {
@@ -75,7 +74,7 @@ pub async fn get_project_language(depploy_dir: &PathBuf) -> Result<Vec<Language>
     }
     let content = fs::read_to_string(path)?;
     let languages: Vec<Language> = serde_json::from_str(content.as_str())?;
-    return Ok(languages);
+    Ok(languages)
 }
 
 
@@ -88,30 +87,30 @@ fn read_git_ignore(path: &PathBuf) -> Result<Option<Vec<String>>, Box<dyn Error>
     if complete_path.exists() {
         let content = fs::read_to_string(complete_path)?;
         let mut splitted: Vec<String> = content
-            .split("\n")
+            .split('\n')
             .collect::<Vec<&str>>()
             .iter()
-            .map(|c| prepare_ignore(c))
+            .map(prepare_ignore)
             .collect();
         // manual ignores like .git
         to_ignore.append(&mut splitted);
         return Ok(Some(to_ignore));
     }
     error!("No gitignore found, will also index build files");
-    return Ok(Some(to_ignore));
+    Ok(Some(to_ignore))
 }
 fn prepare_ignore(s: &&str) -> String {
     //! gets a string slice and checks if it contains a slash, if so it will be removed.
-    if s.contains("/") {
-        let x = s.split("/").collect::<String>();
+    if s.contains('/') {
+        let x = s.split('/').collect::<String>();
         return x;
     }
-    return s.to_string();
+    s.to_string()
 }
 
 pub fn create_project_analysis(path: &PathBuf) -> Result<Option<String>, Box<dyn Error>> {
-    let excluded = read_git_ignore(&path)?.unwrap_or(Vec::new());
-    let files = get_filesnames(&path, &excluded)?.unwrap_or(Vec::new());
+    let excluded = read_git_ignore(path)?.unwrap_or(Vec::new());
+    let files = get_filesnames(path, &excluded)?.unwrap_or(Vec::new());
     let analysis = analyzse_dir_struct(files);
     Ok(analysis)
 }

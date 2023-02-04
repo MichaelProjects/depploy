@@ -1,6 +1,6 @@
 use std::{path::PathBuf, str::FromStr};
 
-use crate::{commands::Prototype, common::models::PrototypeConfig, build::{create_tag, set_latest_tag}, io::{ProjectConf, build_depploy_path, match_config, load_project_file, get_info}, conf::{read_depploy_conf}};
+use crate::{commands::Prototype, common::models::PrototypeConfig, build::{create_tag, set_latest_tag}, io::{build_depploy_path, match_config, load_project_file, get_info}, conf::{read_depploy_conf}};
 
 use super::{generate::{send_creation_prototype, CreatePrototype, presist_creation_prototype, check_for_prototype}, upload::{read_project_file, upload_config}, list::list_running_services};
 
@@ -8,16 +8,16 @@ use super::{generate::{send_creation_prototype, CreatePrototype, presist_creatio
 
 pub async fn prototype_logic(cmd: &Prototype) {
     match cmd {
-        Prototype::Create { dir, debug } => {
+        Prototype::Create { dir, debug: _ } => {
             let x = dir.as_os_str().to_string_lossy().to_string();
             check_for_prototype(&x).expect("Codebase already has a prototype configured.");
 
             let cfg = read_depploy_conf(&PathBuf::from_str(build_depploy_path().as_str()).unwrap()).await.unwrap();
             
-            let filename = match_config(&dir);
-            let config_data = match load_project_file(&dir, &filename) {
+            let filename = match_config(dir);
+            let config_data = match load_project_file(dir, &filename) {
                 Ok(data) => data,
-                Err(err) => panic!("Error: {}", err),
+                Err(err) => panic!("Error: {err}"),
             };
             let data = get_info(config_data);
 
@@ -29,7 +29,7 @@ pub async fn prototype_logic(cmd: &Prototype) {
 
             presist_creation_prototype(x, PrototypeConfig::new(res, cpt.docker_registry_uri.clone())).unwrap();
         }
-        Prototype::Upload { dir, debug } => {
+        Prototype::Upload { dir, debug: _ } => {
             let cfg = read_depploy_conf(&PathBuf::from_str(build_depploy_path().as_str()).unwrap()).await.unwrap();
             let x = dir.as_os_str().to_string_lossy().to_string();
             let pcfg = read_project_file(&x).unwrap();

@@ -13,7 +13,7 @@ pub async fn is_new_version_available() -> Result<Option<String>, Box<dyn Error>
     if res.status() == StatusCode::OK {
         let data: Vec<GHRelease> = res.json().await?;
         const VERSION: &str = env!("CARGO_PKG_VERSION");
-        let version = v_string_to_int(&VERSION.to_string())?;
+        let version = v_string_to_int(&VERSION)?;
 
         let os = determine_os();
         if os.is_some() {
@@ -30,17 +30,17 @@ pub async fn is_new_version_available() -> Result<Option<String>, Box<dyn Error>
             }
         }
     }
-    return Ok(None);
+    Ok(None)
 }
 
-fn v_string_to_int(version: &String) -> Result<String, Box<dyn Error>>{
-    let mut vers = version.split("").collect::<Vec<&str>>();
+fn v_string_to_int(version: &str) -> Result<String, Box<dyn Error>>{
+    let vers = version.split("").collect::<Vec<&str>>();
     let mut full = "".to_string();
     vers.into_iter().for_each(|x| match x.trim().parse::<u128>(){
         Ok(x) => {
-            full = format!("{}{}", full, x);
+            full = format!("{full}{x}");
         },  
-        Err(x) => {}
+        Err(_x) => {}
     });
     Ok(full)
 }
@@ -53,12 +53,12 @@ fn determine_os() -> Option<String> {
     if os.contains("linux") {
         return Some("linux".to_string());
     }
-    return None;
+    None
 }
 
 pub async fn download_bin(asset: String) -> Result<(), Box<dyn Error>> {
     // download the artifact from github release
-    let mut res = reqwest::get(asset).await.unwrap();
+    let res = reqwest::get(asset).await.unwrap();
     assert!(res.status() == 200);
 
     let mut buf: Vec<u8> = Vec::new();
@@ -87,10 +87,10 @@ pub async fn download_bin(asset: String) -> Result<(), Box<dyn Error>> {
 fn user_path() -> String {
     let username = whoami::username();
     match env::consts::OS {
-        "macos" => return format!("/Users/{}/.local/bin/depploy", username),
-        "linux" => return format!("/home/{}/.local/bin/depploy", username),
-        "windows" => return format!("C:/Users/{}/.depploy", username),
-        other => return String::new(),
+        "macos" => format!("/Users/{username}/.local/bin/depploy"),
+        "linux" => format!("/home/{username}/.local/bin/depploy"),
+        "windows" => format!("C:/Users/{username}/.depploy"),
+        _other => String::new(),
     }
 }
 

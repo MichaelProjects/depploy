@@ -18,23 +18,23 @@ impl CreatePrototype {
 }
 
 
-pub async fn send_creation_prototype(pt: &CreatePrototype, project_path: &String, host: &String, token: &String) -> Result<String, Box<dyn Error>> {
-    let uri = format!("{}/api/v1/config/prototype", host);
+pub async fn send_creation_prototype(pt: &CreatePrototype, _project_path: &str, host: &String, token: &String) -> Result<String, Box<dyn Error>> {
+    let uri = format!("{host}/api/v1/config/prototype");
     let client = reqwest::Client::new();
     let res= client.post(uri)
     .header("Authentication", token)
     .body(serde_json::to_string(&pt)?).send().await?.text().await?;
     let data: ServerResponse = serde_json::from_str(res.as_str())?;
-    return Ok(data.data)
+    Ok(data.data)
 }
 
 pub fn check_for_prototype(project_path: &String) -> Result<PathBuf, Box<dyn Error>>{
-    create_project_cache(&project_path)?;
+    create_project_cache(project_path)?;
     let path = PathBuf::from(format!("{}/.depploy/prototype.json", &project_path).as_str());
     if path.exists() {
         return Err(Box::new(PTGenError::Exists));
     }
-    return Ok(path);
+    Ok(path)
 }
 
 pub fn presist_creation_prototype(project_path: String, pt_data: PrototypeConfig) -> Result<(), Box<dyn Error>> {
@@ -43,6 +43,6 @@ pub fn presist_creation_prototype(project_path: String, pt_data: PrototypeConfig
         path,
         serde_json::to_string_pretty(&pt_data)?,
     )?;
-    return Ok(())
+    Ok(())
 }
 
