@@ -1,4 +1,4 @@
-name: release
+name: cd
 
 on:
   push:
@@ -52,11 +52,11 @@ jobs:
         run: echo "::set-output name=version::$(./target/release/depploy --version)"
         id: version
 
-      # - uses: "marvinpinto/action-automatic-releases@latest"
-      #   with:
-      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
-      #     prerelease: false
-      #     files: |
-      #       archive/depploy.darwin-amd64.tar.gz
-      #       archive/x86_64-unknown-linux-gnu
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            archive/depploy.darwin-amd64.tar.gz
+            archive/x86_64-unknown-linux-gnu
       

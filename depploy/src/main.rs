@@ -1,7 +1,5 @@
 
 use std::env;
-use std::error::Error;
-
 
 use depploy_logic::build::{create_tag, set_latest_tag, build_image, push_image};
 use depploy_logic::commands::{Command};
