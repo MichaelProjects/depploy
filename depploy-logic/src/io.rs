@@ -90,7 +90,6 @@ pub fn get_info(config_data: String) -> ProjectConf {
 }
 
 pub fn build_dir(dir: &Path) -> String {
-    println!("Put in Path: {dir:?}");
     let dir_str = dir.to_str().expect("Path");
     if dir_str.ne(".") {
         let a = dir_str.to_string();

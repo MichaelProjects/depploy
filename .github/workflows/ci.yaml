@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  push:
+    branches: [ main, dev, master ]
+  pull_request:
+    branches: [ main, dev, master ]
+
+jobs:
+    testing:
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+                components: clippy
+                override: true
+            - uses: Swatinem/rust-cache@v1
+              with: 
+                  sharedKey: gh_action_vercise_depploy_rust
+            - name: run tests
+              run: cargo test --release
+
+    build:
+        name: Building for ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                # This should work with only the `include`s, but it currently doesn't because of this bug:
+                # https://github.community/t5/How-to-use-Git-and-GitHub/GitHub-Actions-Matrix-options-dont-work-as-documented/td-p/29558
+                target: [x86_64-apple-darwin, x86_64-unknown-linux-musl, aarch64-apple-darwin]
+                include:
+                    - os: macos-latest
+                      target: x86_64-apple-darwin
+                    - os: ubuntu-latest
+                      target: x86_64-unknown-linux-gnu
+                    - os: macos-latest
+                      target: aarch64-apple-darwin
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                fetch-depth: 0
+            - uses: actions/cache@v3
+              with:
+                path: target
+                key: build_cache
+            - uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+                components: clippy
+                override: true
+            - name: install targets
+              run: rustup target add x86_64-apple-darwin && rustup target add x86_64-unknown-linux-gnu
+            
+            - uses: hecrj/setup-rust-action@v1
+              with:
+                rust-version: stable
+      
+            if: github.ref == 'refs/heads/main'
+            - uses: actions/upload-artifact@v2
+                with:
+                path: retarus/Cargo.toml
+                name: ${{ github.sha }}-ci_rust

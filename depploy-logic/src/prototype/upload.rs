@@ -17,7 +17,7 @@ pub async fn upload_config(cfg: Cfg, host: &String, token: String) -> Result<(),
     .header("Authentication", token)
     .body(serde_json::to_string(&cfg)?).send().await?;
     if res.status() != StatusCode::OK{
-        println!("Could not upload the config");
+        println!("Could not upload the config, error: {:?}", res.text().await?);
         return Ok(())
     }
     let body = res.text().await?;

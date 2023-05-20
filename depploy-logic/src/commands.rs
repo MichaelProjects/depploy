@@ -19,7 +19,7 @@ pub enum Command {
         config_file: String,
         #[structopt(short = "v", long = "verbose", help = "Show debug information about the build process")]
         debug: bool,
-        #[structopt(short = "p", long = "platform", default_value = "", help = "Select the platform, mainly for apple silicon => linux/amd64")]
+        #[structopt(short = "pf", long = "platform", default_value = "", help = "Select the platform, mainly for apple silicon => linux/amd64")]
         platform: String
     },
     #[structopt(about = "Search for docker images in registry")]

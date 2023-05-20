@@ -12,6 +12,11 @@ pub async fn list_running_services(host: &String, token: String) -> Result<(), B
     let res = client.get(uri)
     .header("Authentication", token)
     .send().await?;
+    let x = res.headers().get("Content-Type").unwrap();
+    if x.to_str()?.contains("application/problem+json"){
+        println!("Server responded with error: {:?}", res.text().await);
+        return Ok(())
+    }
     if res.status() != StatusCode::OK{
         println!("Cloud not get running services");
     }

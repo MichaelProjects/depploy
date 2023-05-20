@@ -1,5 +1,6 @@
 
 use std::env;
+use std::process::exit;
 
 use depploy_logic::build::{create_tag, set_latest_tag, build_image, push_image};
 use depploy_logic::commands::{Command};
@@ -35,7 +36,7 @@ fn build_depploy_path() -> String {
         "macos" => return format!("/Users/{}/.depploy", username),
         "linux" => return format!("/home/{}/.depploy", username),
         "windows" => return format!("C:/Users/{}/.depploy", username),
-        other => return String::new(),
+        _other => return String::new(),
     }
 }
 
@@ -130,9 +131,15 @@ async fn main() {
             
             let latest_tag = set_latest_tag(name);
 
-            build_image(&tag, build_dir.as_str(), dockerfile_name, &no_latest, &latest_tag, platform).await;
+            match build_image(&tag, build_dir.as_str(), dockerfile_name, &no_latest, &latest_tag, platform).await{
+                Ok(_) =>{}
+                Err(_) => {exit(1)}
+            }
 
-            push_image(&tag);
+            match push_image(&tag){
+                    Ok(_) =>{}
+                    Err(_) => {exit(1)}
+            }
 
             // sets label to latest build and then pushes it also to the registry
             if no_latest.ne(&true) {
@@ -171,7 +178,7 @@ async fn main() {
             } else {
                 let detected = match create_project_analysis(&path) {
                     Ok(lang) => lang,
-                    Err(err) => {
+                    Err(_err) => {
                         warn!("Was not able to get project language");
                         None
                     }

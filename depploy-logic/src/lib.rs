@@ -1,3 +1,5 @@
+#![feature(exit_status_error)]
+
 pub mod build;
 pub mod commands;
 pub mod conf;
